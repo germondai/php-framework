@@ -1,9 +1,0 @@
-{
-	"scripts": {
-		"start": "npm run watch:css",
-		"watch:css": "npx tailwindcss -i ./src/assets/css/tailwind.css -o ./public/assets/css/style.css --watch"
-	},
-	"devDependencies": {
-		"tailwindcss": "^3.4.3"
-	}
-}
