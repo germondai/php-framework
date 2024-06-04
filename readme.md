@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://germondai.rf.gd" target="_blank">
+  <a href="https://api.germondai.com" target="_blank">
     <img align="center" src="https://skillicons.dev/icons?i=php,mysql" /><br/><br/>
     <span>PHP RESTful API</span>&nbsp;
   </a>
@@ -81,6 +81,8 @@ php bin/console ...
 # if you need commands list
 php bin/console list
 ```
+
+---
 
 <p align="center">
     <span>Made with ❤️ by</span>
