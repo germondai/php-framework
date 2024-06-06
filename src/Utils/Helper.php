@@ -38,12 +38,13 @@ class Helper
 
     public static function getEnv(string $env, bool $die = false)
     {
+        $envName = $env;
         $env = $_ENV[$env] ?? false;
 
         if ($env)
             return $env;
 
-        trigger_error('Add valid "' . $env . '" to .env!');
+        trigger_error('Add valid "' . $envName . '" to .env!');
 
         if ($die)
             die();
