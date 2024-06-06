@@ -1,0 +1,14 @@
+# misc
+.DS_Store
+
+# composer
+vendor/
+
+# node
+node_modules/
+
+# env
+.env
+
+# temp
+temp/*
