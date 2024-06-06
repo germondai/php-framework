@@ -36,6 +36,7 @@ class User extends BaseEntity
 
     public function __construct(string $name, string $surname, string $email, string $password)
     {
+        parent::__construct();
         $this->articles = new ArrayCollection();
         $this->books = new ArrayCollection();
         $this->events = new ArrayCollection();

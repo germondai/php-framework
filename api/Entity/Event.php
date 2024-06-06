@@ -22,6 +22,7 @@ class Event extends BaseEntity
 
     public function __construct(string $title, string $content)
     {
+        parent::__construct();
         $this->setTitle($title);
         $this->setContent($content);
     }
