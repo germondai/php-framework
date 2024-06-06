@@ -13,16 +13,16 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'users')]
 class User extends BaseEntity
 {
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $surname;
 
-    #[ORM\Column(type: 'string', length: 256, unique: true)]
+    #[ORM\Column(type: 'string', unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $password;
 
     #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'user')]

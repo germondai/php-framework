@@ -11,10 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'articles')]
 class Article extends BaseEntity
 {
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $title;
 
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: 'text', columnDefinition: 'TEXT')]
     private string $content;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
