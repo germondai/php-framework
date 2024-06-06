@@ -85,7 +85,7 @@ class User extends BaseEntity
 
     public function setPassword(string $password): User
     {
-        $this->password = $password;
+        $this->password = password_hash($password, PASSWORD_BCRYPT);
         return $this;
     }
 
