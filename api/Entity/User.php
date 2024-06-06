@@ -28,9 +28,13 @@ class User extends BaseEntity
     #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'user')]
     private Collection $articles;
 
+    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'user')]
+    private Collection $books;
+
     public function __construct(string $name, string $surname, string $email, string $password)
     {
         $this->articles = new ArrayCollection();
+        $this->books = new ArrayCollection();
         $this->setName($name);
         $this->setSurname($surname);
         $this->setEmail($email);
@@ -99,6 +103,27 @@ class User extends BaseEntity
     public function removeArticle(Article $article): User
     {
         $this->articles->removeElement($article);
+        return $this;
+    }
+
+    // Books
+    public function getBooks(): Collection
+    {
+        return $this->books;
+    }
+
+    public function addBook(Book $book): User
+    {
+        $book->setUser($this);
+
+        $this->books->add($book);
+
+        return $this;
+    }
+
+    public function removeBook(Book $book): User
+    {
+        $this->books->removeElement($book);
         return $this;
     }
 }
