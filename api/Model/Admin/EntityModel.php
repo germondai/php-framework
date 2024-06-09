@@ -11,7 +11,6 @@ class EntityModel extends ApiController
     public function actionGetAll()
     {
         $this->allowMethods(['GET']);
-        $this->requireHeaders(['Authorization']);
         $user = $this->verifyJWT();
 
         return [

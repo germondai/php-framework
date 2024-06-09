@@ -174,6 +174,8 @@ class ApiController
 
     protected function verifyJWT(bool $die = true): array|false
     {
+        $this->requireHeaders(['Authorization']);
+
         $auth = $this->headers['Authorization'] ?? false;
 
         if ($auth)

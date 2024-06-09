@@ -13,7 +13,6 @@ class AuthModel extends ApiController
     public function action()
     {
         $this->allowMethods(['GET']);
-        $this->requireHeaders(['Authorization']);
         $user = $this->verifyJWT();
 
         return [
