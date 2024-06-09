@@ -6,16 +6,16 @@ namespace Api\Model\Admin;
 
 use Api\ApiController;
 
-class RepositoryModel extends ApiController
+class EntityModel extends ApiController
 {
-    public function actionGetAllRepositories()
+    public function actionGetAll()
     {
         $this->allowMethods(['GET']);
         $this->requireHeaders(['Authorization']);
         $user = $this->verifyJWT();
 
         return [
-            'repositories' => [
+            'entities' => [
                 'article' => 'Články',
                 'book' => 'Knihy',
                 'event' => 'Kurzy',
