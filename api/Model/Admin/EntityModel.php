@@ -70,7 +70,7 @@ class EntityModel extends ApiController
     public function actionGetAll()
     {
         $this->allowMethods(['GET']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
 
         $tables = $this->getTables();
 
