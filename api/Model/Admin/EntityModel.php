@@ -35,6 +35,22 @@ class EntityModel extends ApiController
             ];
         }
 
+        usort($cols, function ($a, $b) {
+            if ($a['name'] === 'id')
+                return -1;
+            if ($b['name'] === 'id')
+                return 1;
+            if (substr($a['name'], -3) === '_id' && substr($b['name'], -3) !== '_id')
+                return -1;
+            if (substr($a['name'], -3) !== '_id' && substr($b['name'], -3) === '_id')
+                return 1;
+            if (substr($a['name'], -3) === '_at' && substr($b['name'], -3) !== '_at')
+                return 1;
+            if (substr($a['name'], -3) !== '_at' && substr($b['name'], -3) === '_at')
+                return -1;
+            return 0;
+        });
+
         return $cols;
     }
 
