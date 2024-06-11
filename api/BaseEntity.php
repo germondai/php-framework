@@ -37,7 +37,7 @@ class BaseEntity
         return $this->id;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
@@ -48,7 +48,7 @@ class BaseEntity
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
@@ -59,7 +59,7 @@ class BaseEntity
         return $this;
     }
 
-    public function getDeletedAt(): \DateTime
+    public function getDeletedAt(): ?\DateTime
     {
         return $this->deletedAt;
     }
