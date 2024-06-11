@@ -11,18 +11,11 @@ class EntryModel extends ApiController
 {
     private function findClassByTableName(string $tableName): string
     {
-        $metadataFactory = $this->em->getMetadataFactory();
-        $allMetadata = $metadataFactory->getAllMetadata();
-
         $tableToEntityClassMap = [];
 
-        foreach ($allMetadata as $metadata) {
-            if ($metadata instanceof ClassMetadata) {
-                $tbName = $metadata->getTableName();
-                $entityClass = $metadata->getName();
-                $tableToEntityClassMap[$tbName] = $entityClass;
-            }
-        }
+        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadata)
+            if ($metadata instanceof ClassMetadata)
+                $tableToEntityClassMap[$metadata->getTableName()] = $metadata->getName();
 
         return $tableToEntityClassMap[$tableName];
     }
@@ -41,6 +34,17 @@ class EntryModel extends ApiController
             ->from($eClass, 'e')
             ->getQuery()
             ->getArrayResult();
+
+        $secrets = ['password'];
+
+        foreach ($entries as &$entry) {
+            foreach ($entry as $k => &$v) {
+                if (in_array($k, $secrets))
+                    $v = 'SECRET';
+                elseif ($v instanceof \DateTime)
+                    $v = $v->format('j. n. Y - H:i:s');
+            }
+        }
 
         return $entries;
     }

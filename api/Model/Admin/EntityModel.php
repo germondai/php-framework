@@ -7,6 +7,7 @@ namespace Api\Model\Admin;
 use Api\ApiController;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
+use Utils\Helper;
 
 class EntityModel extends ApiController
 {
@@ -24,16 +25,16 @@ class EntityModel extends ApiController
     {
         $cols = [];
 
-        foreach ($columns as $c) {
-            $type = array_search($c->getType()::class, Type::getTypesMap());
+        $disableds = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
+        foreach ($columns as $c)
             $cols[] = [
                 'name' => $c->getName(),
-                'type' => $type,
-                'notnull' => $c->getNotnull(),
+                'type' => array_search($c->getType()::class, Type::getTypesMap()),
                 'length' => $c->getLength(),
+                'required' => $c->getNotnull(),
+                'disabled' => in_array($c->getName(), $disableds),
             ];
-        }
 
         usort($cols, function ($a, $b) {
             if ($a['name'] === 'id')
@@ -50,6 +51,9 @@ class EntityModel extends ApiController
                 return -1;
             return 0;
         });
+
+        foreach ($cols as &$c)
+            $c['name'] = Helper::snakeToCamel($c['name']);
 
         return $cols;
     }

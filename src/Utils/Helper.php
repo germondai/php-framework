@@ -49,4 +49,9 @@ class Helper
         if ($die)
             die();
     }
+
+    public static function snakeToCamel($string): string
+    {
+        return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $string))));
+    }
 }
