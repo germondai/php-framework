@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Model\Admin;
 
 use Api\ApiController;
+use Api\Entity\User;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -95,6 +96,67 @@ class EntryModel extends ApiController
         $id = $this->params['id'] ?? false;
 
         $entry = $this->findWithRelations($eClass, !empty($id) ? (int) $id : -1);
-        return $this->process($entry);
+        return $this->process($entry)[0];
+    }
+
+    public function actionCreate()
+    {
+        $this->allowMethods(['POST']);
+        $user = $this->verifyJWT();
+        $this->requireParams(['entityId', 'id']);
+
+        $eId = $this->params['entityId'] ?? false;
+        $eClass = $this->findClassByTableName($eId);
+        $id = $this->params['id'] ?? false;
+
+        // $new = new $eClass();
+
+        // Sample data
+        $data = [
+            'class' => 'Api\Entity\Article', // Note the namespace correction if needed
+            'title' => 'Title',
+            'content' => 'Content',
+            'user_id' => 3
+        ];
+
+        // Extract class name and user ID
+        $className = $data['class'];
+        $userId = $data['user_id'];
+
+        // Find the User entity
+        $user = $this->em->getRepository(User::class)->find($userId);
+        if (!$user)
+            $this->throwError(400, 'No user found for id ' . $userId);
+
+
+        // Create a new instance of the Article entity
+        if (!class_exists($className))
+            throw new \Exception('Class ' . $className . ' does not exist');
+
+        $entity = new $className();
+
+        // dump($entity);
+
+        // Set the properties dynamically
+        foreach ($data as $property => $value) {
+            if ($property !== 'class' && $property !== 'user_id') {
+                $setter = 'set' . ucfirst($property);
+                if (method_exists($entity, $setter)) {
+                    $entity->$setter($value);
+                }
+            }
+        }
+
+        // dump($entity);
+
+        // Set the User relationship
+        $entity->setUser($user);
+        // dumpe($entity);
+
+        // Persist and flush
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        return;
     }
 }

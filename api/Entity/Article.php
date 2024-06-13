@@ -20,11 +20,11 @@ class Article extends BaseEntity
     #[ORM\ManyToOne(inversedBy: 'articles')]
     private User $user;
 
-    public function __construct(string $title, string $content)
+    public function __construct(string $title = null, string $content = null)
     {
         parent::__construct();
-        $this->setTitle($title);
-        $this->setContent($content);
+        $title ? $this->setTitle($title) : '';
+        $content ? $this->setContent($content) : '';
     }
 
     public function getTitle(): string
