@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Api\Controller;
 
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Utils\Helper;
 
@@ -38,43 +37,48 @@ class Entity extends Api
         $route = str_replace(Helper::getLinkPath(), '', $_SERVER['REDIRECT_URL']);
         $params = explode('/', $route);
         $entityId = $params[0] ?? false;
+        $entityClass = null;
         $id = $params[1] ?? false;
 
         if ($entityId && $entityId !== 'schema') {
+            $entityClass = $this->findClassByTableName($entityId);
+
             $id = $id && ctype_digit($id) ? (int) $id : $id;
-            $id ? $this->{strtolower($this->method)}($entityId, $id)
-                : $this->{strtolower($this->method)}($entityId);
+            $id ? $this->{strtolower($this->method)}($entityClass, $id)
+                : $this->{strtolower($this->method)}($entityClass);
+
             return;
         }
 
-        $this->schema($id ? $id : null);
+        if (!empty($id))
+            $entityClass = $this->findClassByTableName($id);
+        $this->schema($entityClass ?? null);
     }
 
-    private function schema(string $entityId = null)
+    private function schema(string $entityClass = null)
     {
         $this->allowMethods(['GET']);
         // $user = $this->verifyJWT();
 
-        if (!empty($entityId))
-            $this->respond($this->getTables(true, $entityId));
+        if (!empty($entityClass))
+            $this->respond($this->getTables(true, $entityClass));
 
         $this->respond($this->getTables());
     }
 
-    private function get(string $entityId = null, int $id = null)
+    private function get(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['GET']);
 
-        if (!empty($entityId)) {
-            $class = $this->findClassByTableName($entityId);
-
+        if (!empty($entityClass)) {
             if (!empty($id)) {
                 $entry = $this->em
-                    ->getRepository($class)
+                    ->getRepository($entityClass)
                     ->createQueryBuilder('e')
                     ->where('e.id = :id')
                     ->setParameter('id', $id)
                     ->getQuery()
+                    ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
                     ->getArrayResult();
 
                 if (!empty($entry))
@@ -82,7 +86,7 @@ class Entity extends Api
                 $this->throwError(404);
             }
 
-            $query = $this->em->getRepository($class)->createQueryBuilder('e');
+            $query = $this->em->getRepository($entityClass)->createQueryBuilder('e');
 
             $paginatior = new Paginator($query);
 
@@ -105,35 +109,35 @@ class Entity extends Api
                 'nextPage' => $nextPage,
                 'previousPage' => $previousPage,
                 'totalEntries' => $totalEntries,
-                'result' => $records,
+                'result' => $this->process($records),
             ]);
         }
 
         $this->throwError();
     }
 
-    private function post(string $entityId = null)
+    private function post(string $entityClass = null)
     {
         $this->allowMethods(['POST']);
         // $user = $this->verifyJWT();
 
-        if (!empty($entityId)) {
+        if (!empty($entityClass)) {
 
-            dump($entityId);
+            dump($entityClass);
             $this->respond('this is POST fn');
         }
 
         $this->throwError();
     }
 
-    private function put(string $entityId = null, int $id = null)
+    private function put(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['PUT']);
         // $user = $this->verifyJWT();
 
-        if (!empty($entityId) && !empty($id)) {
+        if (!empty($entityClass) && !empty($id)) {
 
-            dump($entityId);
+            dump($entityClass);
             dump($id);
             $this->respond('this is PUT fn');
         }
@@ -141,14 +145,14 @@ class Entity extends Api
         $this->throwError();
     }
 
-    private function patch(string $entityId = null, int $id = null)
+    private function patch(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['PATCH']);
         // $user = $this->verifyJWT();
 
-        if (!empty($entityId) && !empty($id)) {
+        if (!empty($entityClass) && !empty($id)) {
 
-            dump($entityId);
+            dump($entityClass);
             dump($id);
             $this->respond('this is PATCH fn');
         }
@@ -156,14 +160,14 @@ class Entity extends Api
         $this->throwError();
     }
 
-    private function delete(string $entityId = null, int $id = null)
+    private function delete(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['DELETE']);
         // $user = $this->verifyJWT();
 
-        if (!empty($entityId) && !empty($id)) {
+        if (!empty($entityClass) && !empty($id)) {
 
-            dump($entityId);
+            dump($entityClass);
             dump($id);
             $this->respond('this is DELETE fn');
         }
@@ -171,72 +175,67 @@ class Entity extends Api
         $this->throwError();
     }
 
-    private function getTables(bool $columns = false, string $table = null)
+    private function getTables(bool $columns = false, string $class = null)
     {
-        $schM = $this->em->getConnection()->createSchemaManager();
+        $mf = $this->em->getMetadataFactory();
+        $metadata = !empty($class) ? [$mf->getMetadataFor($class)] : $mf->getAllMetadata();
 
-        $tables = $schM->listTables();
+        $tables = [];
+        foreach ($metadata as $m) {
+            $name = $m->table['name'];
+            $tName = $this->tNames[$name] ?? $name;
 
-        if ($table)
-            $tables = [$schM->introspectTable($table)];
-
-        $tableNames = [];
-        foreach ($tables as $t) {
-            $tName = $t->getName();
-
-            if (str_contains($tName, 'doctrine_'))
+            if ($name === 'base')
                 continue;
 
-            $tableNames[$tName] = [
-                'id' => $tName,
-                'name' => $this->tNames[$tName],
-                'schema' => 'schema/' . $tName,
-                // 'class' => $this->findClassByTableName($tName),
-            ];
+            $cols = [];
+            if ($columns) {
+                foreach ($m->fieldMappings as $field)
+                    $cols[] = [
+                        'name' => $field->fieldName,
+                        'col' => $field->columnName,
+                        'type' => $field->type,
+                        'length' => $field->length,
+                        'required' => !$field->nullable,
+                        'disabled' => in_array($field->columnName, $this->disableds),
+                    ];
 
-            if ($columns)
-                $tableNames[$tName]['columns'] = $this->getColumns($t->getColumns());
+                usort($cols, function ($a, $b) {
+                    if ($a['col'] === 'id')
+                        return -1;
+                    if ($b['col'] === 'id')
+                        return 1;
+                    if (substr($a['col'], -3) === '_id' && substr($b['col'], -3) !== '_id')
+                        return -1;
+                    if (substr($a['col'], -3) !== '_id' && substr($b['col'], -3) === '_id')
+                        return 1;
+                    if (substr($a['col'], -3) === '_at' && substr($b['col'], -3) !== '_at')
+                        return 1;
+                    if (substr($a['col'], -3) !== '_at' && substr($b['col'], -3) === '_at')
+                        return -1;
+                    return 0;
+                });
+
+                foreach ($cols as &$col)
+                    unset($col['col']);
+
+                foreach ($m->associationMappings as $assoc)
+                    $cols[] = [
+                        'name' => $assoc->fieldName,
+                        'schema' => 'schema/' . $assoc->fieldName,
+                        // 'class' => $assoc->targetEntity,
+                    ];
+            }
+
+            $tables[$name] = [
+                'id' => $name,
+                'name' => $tName,
+                'schema' => 'schema/' . $name,
+                'columns' => $cols,
+            ];
         }
 
-        return $tableNames;
-    }
-
-    /**
-     * @param Column[] $columns
-     */
-    private function getColumns(array $columns): ?array
-    {
-        $cols = [];
-
-        foreach ($columns as $c)
-            $cols[] = [
-                'name' => $c->getName(),
-                'type' => array_search($c->getType()::class, Type::getTypesMap()),
-                'length' => $c->getLength(),
-                'required' => $c->getNotnull(),
-                'disabled' => in_array($c->getName(), $this->disableds),
-            ];
-
-        usort($cols, function ($a, $b) {
-            if ($a['name'] === 'id')
-                return -1;
-            if ($b['name'] === 'id')
-                return 1;
-            if (substr($a['name'], -3) === '_id' && substr($b['name'], -3) !== '_id')
-                return -1;
-            if (substr($a['name'], -3) !== '_id' && substr($b['name'], -3) === '_id')
-                return 1;
-            if (substr($a['name'], -3) === '_at' && substr($b['name'], -3) !== '_at')
-                return 1;
-            if (substr($a['name'], -3) !== '_at' && substr($b['name'], -3) === '_at')
-                return -1;
-            return 0;
-        });
-
-        foreach ($cols as &$c)
-            $c['name'] = Helper::snakeToCamel($c['name']);
-
-        return $cols;
+        return $tables;
     }
 
     private function findClassByTableName(string $tableName): string
