@@ -101,8 +101,8 @@ class EntryModel extends ApiController
 
     public function actionCreate()
     {
-        $this->allowMethods(['POST']);
-        $user = $this->verifyJWT();
+        // $this->allowMethods(['POST']);
+        // $user = $this->verifyJWT();
         $this->requireParams(['entityId']);
 
         $eId = $this->params['entityId'] ?? false;

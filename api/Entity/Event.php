@@ -16,7 +16,7 @@ class Event extends Base
     #[ORM\Column(type: 'text', columnDefinition: 'TEXT')]
     private string $content;
 
-    #[ORM\ManyToOne(inversedBy: 'books')]
+    #[ORM\ManyToOne(inversedBy: 'events')]
     private User $user;
 
     public function __construct(string $title, string $content)
