@@ -17,6 +17,7 @@ class ApiController
     protected EntityManager $em;
     protected array $params;
     protected array $headers;
+    protected string $method;
     private string $request;
     private array $action;
     protected array $statuses = [
@@ -42,6 +43,7 @@ class ApiController
     {
         $this->e = Database::explore();
         $this->em = Doctrine::getEntityManager();
+        $this->method = $_SERVER['REQUEST_METHOD'];
         $this->setParams();
         $this->setHeaders();
         $this->setRequest();
