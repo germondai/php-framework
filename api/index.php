@@ -15,10 +15,8 @@ header("Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorizatio
 header('Content-Type: application/json; charset=utf-8');
 
 # preflight error fix
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    die();
-}
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
+    die(200);
 
 # handle api request
 $api = new ApiController();

@@ -103,11 +103,10 @@ class EntryModel extends ApiController
     {
         $this->allowMethods(['POST']);
         $user = $this->verifyJWT();
-        $this->requireParams(['entityId', 'id']);
+        $this->requireParams(['entityId']);
 
         $eId = $this->params['entityId'] ?? false;
         $eClass = $this->findClassByTableName($eId);
-        $id = $this->params['id'] ?? false;
 
         // $new = new $eClass();
 
@@ -158,5 +157,32 @@ class EntryModel extends ApiController
         $this->em->flush();
 
         return;
+    }
+
+    public function actionDelete()
+    {
+        $this->allowMethods(['DELETE']);
+        $user = $this->verifyJWT();
+        $this->requireParams(['entityId', 'id']);
+
+        $eId = $this->params['entityId'] ?? false;
+        if ($eId === 'users')
+            return;
+
+        $eClass = $this->findClassByTableName($eId);
+        $id = $this->params['id'] ?? false;
+
+        $entry = $this->em->getRepository($eClass)
+            ->createQueryBuilder('e')->select('e')
+            ->where('e.id = :id')->setParameter('id', $id)
+            ->getQuery()->getOneOrNullResult();
+
+        if ($entry) {
+            $this->em->remove($entry);
+            $this->em->flush();
+            return ['success' => true];
+        }
+
+        return ['success' => false];
     }
 }
