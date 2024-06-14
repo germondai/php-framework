@@ -53,10 +53,29 @@ class Entity extends Api
         $this->allowMethods(['GET']);
 
         if (!empty($entityId)) {
+            $class = $this->findClassByTableName($entityId);
 
-            dump($entityId);
-            dump($id);
-            $this->respond('this is GET fn');
+            if (!empty($id)) {
+                $entry = $this->em
+                    ->getRepository($class)
+                    ->createQueryBuilder('e')
+                    ->where('e.id = :id')
+                    ->setParameter('id', $id)
+                    ->getQuery()
+                    ->getArrayResult();
+
+                if (!empty($entry))
+                    $this->respond($entry[0]);
+                $this->throwError(404);
+            }
+
+            $entries = $this->em
+                ->getRepository($class)
+                ->createQueryBuilder('e')
+                ->getQuery()
+                ->getArrayResult();
+
+            $this->respond($entries);
         }
 
         $this->throwError();
@@ -139,8 +158,9 @@ class Entity extends Api
 
             $tableNames[$tName] = [
                 'id' => $tName,
-                // 'class' => $this->findClassByTableName($tName),
+                'name' => $this->tNames[$tName],
                 'schema' => 'schema/' . $tName,
+                // 'class' => $this->findClassByTableName($tName),
             ];
 
             if ($columns)
