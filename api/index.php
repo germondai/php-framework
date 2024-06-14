@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 # imports
 use Api\Controller\Api;
+use Api\Controller\Entity;
 
 # require config
 require_once "../src/includes/config.php";
@@ -19,5 +20,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
     die(200);
 
 # handle api request
-$api = new Api();
+$api = new Entity();
 $api->run();
