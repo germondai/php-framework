@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Api\Entity;
 
-use Api\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'events')]
-class Event extends BaseEntity
+class Event extends Base
 {
     #[ORM\Column(type: 'string')]
     private string $title;
