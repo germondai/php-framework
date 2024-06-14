@@ -7,6 +7,7 @@ namespace Api\Controller;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Utils\Helper;
 
 class Entity extends Api
@@ -20,8 +21,20 @@ class Entity extends Api
     private array $disableds = ['id', 'created_at', 'updated_at', 'deleted_at'];
     private array $secrets = ['password'];
 
+    private int $page = 1;
+    private int $perPage = 10;
+
     public function run(): void
     {
+        $page = $this->params['page'] ?? '';
+        $perPage = $this->params['per_page'] ?? $this->params['perPage'] ?? $this->params['perpage'] ?? '';
+        $page = ctype_digit($page) ? (int) $page : null;
+        $perPage = ctype_digit($perPage) ? (int) $perPage : null;
+        $this->page = $page ?? $this->page;
+        $this->perPage = $perPage ?? $this->perPage;
+
+        unset($this->params['page'], $this->params['per_page'], $this->params['perPage'], $this->params['perpage']);
+
         $route = str_replace(Helper::getLinkPath(), '', $_SERVER['REDIRECT_URL']);
         $params = explode('/', $route);
         $entityId = $params[0] ?? false;
@@ -69,13 +82,25 @@ class Entity extends Api
                 $this->throwError(404);
             }
 
-            $entries = $this->em
+            $query = $this->em
                 ->getRepository($class)
-                ->createQueryBuilder('e')
-                ->getQuery()
+                ->createQueryBuilder('e');
+
+            $paginatior = new Paginator($query);
+
+            $totalEntries = $paginatior->count();
+            $page = $this->page;
+            $perPage = $this->perPage;
+            $totalPages = (int) ceil($totalEntries / $perPage);
+            $nextPage = (($page < $totalPages) ? $page + 1 : $totalPages);
+            $previousPage = (($page > 1) ? $page - 1 : 1);
+
+            $records = $paginatior->getQuery()
+                ->setFirstResult($perPage * ($page - 1))
+                ->setMaxResults($perPage)
                 ->getArrayResult();
 
-            $this->respond($entries);
+            $this->respond($records);
         }
 
         $this->throwError();
