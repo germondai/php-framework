@@ -82,9 +82,7 @@ class Entity extends Api
                 $this->throwError(404);
             }
 
-            $query = $this->em
-                ->getRepository($class)
-                ->createQueryBuilder('e');
+            $query = $this->em->getRepository($class)->createQueryBuilder('e');
 
             $paginatior = new Paginator($query);
 
@@ -100,7 +98,15 @@ class Entity extends Api
                 ->setMaxResults($perPage)
                 ->getArrayResult();
 
-            $this->respond($records);
+            $this->respond([
+                'page' => $page,
+                'perPage' => $perPage,
+                'totalPages' => $totalPages,
+                'nextPage' => $nextPage,
+                'previousPage' => $previousPage,
+                'totalEntries' => $totalEntries,
+                'result' => $records,
+            ]);
         }
 
         $this->throwError();
