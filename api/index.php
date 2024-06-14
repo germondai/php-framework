@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 # imports
-use Api\ApiController;
+use Api\Controller\Api;
 
 # require config
 require_once "../src/includes/config.php";
@@ -19,5 +19,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
     die(200);
 
 # handle api request
-$api = new ApiController();
+$api = new Api();
 $api->run();

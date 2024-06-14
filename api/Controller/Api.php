@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api;
+namespace Api\Controller;
 
 use Doctrine\ORM\EntityManager;
 use Nette\Database\Explorer;
@@ -11,7 +11,7 @@ use Utils\Doctrine;
 use Utils\Helper;
 use Utils\Token;
 
-class ApiController
+class Api
 {
     protected Explorer $e;
     protected EntityManager $em;

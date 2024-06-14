@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Api\Model\Admin;
 
-use Api\ApiController;
+use Api\Controller\Api;
 use Api\Entity\User;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-class EntryModel extends ApiController
+class EntryModel extends Api
 {
     private array $secrets = ['password'];
 

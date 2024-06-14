@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Api\Model;
 
-use Api\ApiController;
+use Api\Controller\Api;
 use Api\Entity\Article;
-use Doctrine\DBAL\Types\Type;
 
-class ArticleModel extends ApiController
+class ArticleModel extends Api
 {
     public function action()
     {

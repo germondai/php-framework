@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Api\Model\Users;
 
-use Api\ApiController;
+use Api\Controller\Api;
 
-class AdminModel extends ApiController
+class Admin extends Api
 {
     public function actionGet()
     {

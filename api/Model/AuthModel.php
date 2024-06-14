@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Api\Model;
 
-use Api\ApiController;
+use Api\Controller\Api;
 use Api\Entity\User;
 use Utils\Token;
 
-class AuthModel extends ApiController
+class AuthModel extends Api
 {
     public function action()
     {

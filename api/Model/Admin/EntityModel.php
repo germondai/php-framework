@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Api\Model\Admin;
 
-use Api\ApiController;
+use Api\Controller\Api;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 use Utils\Helper;
 
-class EntityModel extends ApiController
+class EntityModel extends Api
 {
     private array $tNames = [
         'users' => 'Uživatelé',
