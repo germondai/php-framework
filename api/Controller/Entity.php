@@ -82,7 +82,7 @@ class Entity extends Api
                     ->getArrayResult();
 
                 if (!empty($entry))
-                    $this->respond($entry[0]);
+                    $this->respond($this->process($entry)[0]);
                 $this->throwError(404);
             }
 
@@ -200,6 +200,15 @@ class Entity extends Api
                         'disabled' => in_array($field->columnName, $this->disableds),
                     ];
 
+                foreach ($m->associationMappings as $assoc)
+                    $cols[] = [
+                        'name' => $assoc->fieldName,
+                        'col' => $assoc->joinColumns[0]->name ?? '',
+                        'relation' => $assoc->isManyToOne() ? 'single' : 'multi',
+                        'schema' => 'schema/' . $mf->getMetadataFor($assoc->targetEntity)->table['name'],
+                        // 'class' => $assoc->targetEntity,
+                    ];
+
                 usort($cols, function ($a, $b) {
                     if ($a['col'] === 'id')
                         return -1;
@@ -215,22 +224,6 @@ class Entity extends Api
                         return -1;
                     return 0;
                 });
-
-                foreach ($cols as &$col)
-                    unset($col['col']);
-
-                foreach ($m->associationMappings as $assoc) {
-                    $tN = $mf->getMetadataFor($assoc->targetEntity)->table['name'];
-
-                    // dump($assoc);
-
-                    $cols[] = [
-                        'name' => $assoc->fieldName,
-                        'relation' => $assoc->isManyToOne() ? 'single' : 'multi',
-                        'schema' => 'schema/' . $tN,
-                        // 'class' => $assoc->targetEntity,
-                    ];
-                }
             }
 
             $tables[$name] = [
