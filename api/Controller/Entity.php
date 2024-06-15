@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Api\Controller;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -71,6 +72,20 @@ class Entity extends Api
         $this->allowMethods(['GET']);
 
         if (!empty($entityClass)) {
+            $cols = $this->getTables(true, $entityClass, true);
+            $columnNames = array_column($cols, 'name');
+            $columnCols = array_column($cols, 'col');
+
+            function findColumnIndexByName($columns, $key)
+            {
+                foreach ($columns as $index => $column) {
+                    if ($column['name'] === $key) {
+                        return $index;
+                    }
+                }
+                return false;
+            }
+
             if (!empty($id)) {
                 $entry = $this->em
                     ->getRepository($entityClass)
@@ -80,6 +95,35 @@ class Entity extends Api
                     ->getQuery()
                     ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
                     ->getArrayResult();
+
+                foreach ($entry as &$e) {
+                    foreach ($e as $key => $val) {
+                        $index = findColumnIndexByName($cols, $key);
+
+                        if ($index !== false)
+                            unset($cols[$index]);
+                        else
+                            unset($e[$key]);
+                    }
+
+                    foreach ($cols as $c) {
+                        if ($c['relation'] === 'multi') {
+                            $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
+                                ->select('c.id')
+                                ->where('c.' . $c['mappedBy'] . ' = :id')
+                                ->setParameter('id', $e['id'])
+                                ->getQuery()
+                                ->getArrayResult();
+
+                            foreach ($ids as &$a)
+                                $a = $a['id'];
+
+                            $e[$c['name']] = $ids;
+                        } else {
+                            $e[$c['name']] = $val;
+                        }
+                    }
+                }
 
                 if (!empty($entry))
                     $this->respond($this->process($entry)[0]);
@@ -175,7 +219,7 @@ class Entity extends Api
         $this->throwError();
     }
 
-    private function getTables(bool $columns = false, string $class = null)
+    private function getTables(bool $columns = false, string $class = null, bool $onlyColumns = false)
     {
         $mf = $this->em->getMetadataFactory();
         $metadata = !empty($class) ? [$mf->getMetadataFor($class)] : $mf->getAllMetadata();
@@ -206,7 +250,9 @@ class Entity extends Api
                         'col' => $assoc->joinColumns[0]->name ?? '',
                         'relation' => $assoc->isManyToOne() ? 'single' : 'multi',
                         'schema' => 'schema/' . $mf->getMetadataFor($assoc->targetEntity)->table['name'],
-                        // 'class' => $assoc->targetEntity,
+                        'class' => $assoc->targetEntity,
+                        'mappedBy' => $assoc->mappedBy ?? null,
+                        'inversedBy' => $assoc->inversedBy ?? null,
                     ];
 
                 usort($cols, function ($a, $b) {
@@ -224,6 +270,12 @@ class Entity extends Api
                         return -1;
                     return 0;
                 });
+
+                foreach ($cols as &$c)
+                    unset($c['col']);
+
+                if ($onlyColumns)
+                    return $cols;
             }
 
             $tables[$name] = [
