@@ -219,12 +219,15 @@ class Entity extends Api
                 foreach ($cols as &$col)
                     unset($col['col']);
 
-                foreach ($m->associationMappings as $assoc)
+                foreach ($m->associationMappings as $assoc) {
+                    $tN = $mf->getMetadataFor($assoc->targetEntity)->table['name'];
+
                     $cols[] = [
-                        'name' => $assoc->fieldName,
-                        'schema' => 'schema/' . $assoc->fieldName,
+                        'name' => $tN,
+                        'schema' => 'schema/' . $tN,
                         // 'class' => $assoc->targetEntity,
                     ];
+                }
             }
 
             $tables[$name] = [
