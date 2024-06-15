@@ -222,8 +222,11 @@ class Entity extends Api
                 foreach ($m->associationMappings as $assoc) {
                     $tN = $mf->getMetadataFor($assoc->targetEntity)->table['name'];
 
+                    // dump($assoc);
+
                     $cols[] = [
-                        'name' => $tN,
+                        'name' => $assoc->fieldName,
+                        'relation' => $assoc->isManyToOne() ? 'single' : 'multi',
                         'schema' => 'schema/' . $tN,
                         // 'class' => $assoc->targetEntity,
                     ];
