@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Api\Controller;
 
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -72,65 +71,20 @@ class Entity extends Api
         $this->allowMethods(['GET']);
 
         if (!empty($entityClass)) {
-            $cols = $this->getTables(true, $entityClass, true);
-            $columnNames = array_column($cols, 'name');
-            $columnCols = array_column($cols, 'col');
-
-            function findColumnIndexByName($columns, $key)
-            {
-                foreach ($columns as $index => $column) {
-                    if ($column['name'] === $key) {
-                        return $index;
-                    }
-                }
-                return false;
-            }
+            $query = $this->em->getRepository($entityClass)->createQueryBuilder('e');
 
             if (!empty($id)) {
-                $entry = $this->em
-                    ->getRepository($entityClass)
-                    ->createQueryBuilder('e')
+                $entry = $query
                     ->where('e.id = :id')
                     ->setParameter('id', $id)
                     ->getQuery()
                     ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
                     ->getArrayResult();
 
-                foreach ($entry as &$e) {
-                    foreach ($e as $key => $val) {
-                        $index = findColumnIndexByName($cols, $key);
-
-                        if ($index !== false)
-                            unset($cols[$index]);
-                        else
-                            unset($e[$key]);
-                    }
-
-                    foreach ($cols as $c) {
-                        if ($c['relation'] === 'multi') {
-                            $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
-                                ->select('c.id')
-                                ->where('c.' . $c['mappedBy'] . ' = :id')
-                                ->setParameter('id', $e['id'])
-                                ->getQuery()
-                                ->getArrayResult();
-
-                            foreach ($ids as &$a)
-                                $a = $a['id'];
-
-                            $e[$c['name']] = $ids;
-                        } else {
-                            $e[$c['name']] = $val;
-                        }
-                    }
-                }
-
                 if (!empty($entry))
-                    $this->respond($this->process($entry)[0]);
+                    $this->respond($this->process($entityClass, $entry)[0]);
                 $this->throwError(404);
             }
-
-            $query = $this->em->getRepository($entityClass)->createQueryBuilder('e');
 
             $paginatior = new Paginator($query);
 
@@ -144,6 +98,7 @@ class Entity extends Api
             $records = $paginatior->getQuery()
                 ->setFirstResult($perPage * ($page - 1))
                 ->setMaxResults($perPage)
+                ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
                 ->getArrayResult();
 
             $this->respond([
@@ -153,7 +108,7 @@ class Entity extends Api
                 'nextPage' => $nextPage,
                 'previousPage' => $previousPage,
                 'totalEntries' => $totalEntries,
-                'result' => $this->process($records),
+                'result' => $this->process($entityClass, $records),
             ]);
         }
 
@@ -300,14 +255,53 @@ class Entity extends Api
         return $tableToEntityClassMap[$tableName];
     }
 
-    private function process(array $entries)
+    private function process(string $entityClass, array $entries)
     {
-        foreach ($entries as &$entry) {
-            foreach ($entry as $k => &$v) {
+        $cols = $this->getTables(true, $entityClass, true);
+
+        function findColumnIndexByName($columns, $key)
+        {
+            foreach ($columns as $index => $column)
+                if ($column['name'] === $key)
+                    return $index;
+
+            return false;
+        }
+
+        foreach ($entries as &$e) {
+            $tempCols = $cols;
+
+            foreach ($e as $k => &$v) {
                 if (in_array($k, $this->secrets))
                     $v = 'SECRET';
                 elseif ($v instanceof \DateTime)
                     $v = $v->format('j. n. Y - H:i:s');
+            }
+
+            foreach ($e as $key => $val) {
+                $index = findColumnIndexByName($tempCols, $key);
+
+                if ($index !== false)
+                    unset($tempCols[$index]);
+                else
+                    unset($e[$key]);
+            }
+
+            foreach ($tempCols as $c) {
+                if ($c['relation'] === 'multi') {
+                    $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
+                        ->select('c.id')
+                        ->where('c.' . $c['mappedBy'] . ' = :id')
+                        ->setParameter('id', $e['id'])
+                        ->getQuery()
+                        ->getArrayResult();
+
+                    foreach ($ids as &$a)
+                        $a = $a['id'];
+
+                    $e[$c['name']] = $ids;
+                } else
+                    $e[$c['name']] = $val;
             }
         }
 
