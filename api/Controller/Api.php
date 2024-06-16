@@ -168,7 +168,7 @@ class Api
     private function requireValues(array $values, array $requiredValues, int $code = 400)
     {
         foreach ($requiredValues as $requiredValue) {
-            if (!isset($values[$requiredValue])) {
+            if (!empty($values[$requiredValue])) {
                 $this->throwError($code);
             }
         }
