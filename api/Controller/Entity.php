@@ -58,7 +58,7 @@ class Entity extends Api
     private function schema(string $entityClass = null)
     {
         $this->allowMethods(['GET']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
 
         if (!empty($entityClass))
             $this->respond($this->getTables(true, $entityClass));
@@ -122,7 +122,7 @@ class Entity extends Api
     private function post(string $entityClass = null)
     {
         $this->allowMethods(['POST']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
 
         if (!empty($entityClass)) {
             $cols = $this->getTables(true, $entityClass, true);
@@ -173,14 +173,14 @@ class Entity extends Api
     private function put(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['PUT', 'PATCH']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
         $this->patch($entityClass, $id);
     }
 
     private function patch(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['PATCH', 'PUT']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
 
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
@@ -214,7 +214,7 @@ class Entity extends Api
     private function delete(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['DELETE']);
-        // $user = $this->verifyJWT();
+        $user = $this->verifyJWT();
 
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
