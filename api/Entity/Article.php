@@ -13,7 +13,7 @@ class Article extends Base
     #[ORM\Column(type: 'string')]
     private string $title;
 
-    #[ORM\Column(type: 'text', columnDefinition: 'TEXT')]
+    #[ORM\Column(type: 'text', length: 65535)]
     private string $content;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
