@@ -187,9 +187,17 @@ class Entity extends Api
 
             foreach ($this->params as $key => $val) {
                 $setter = 'set' . ucfirst($key);
-                if (method_exists($entity, $setter))
+
+                if (method_exists($entity, $setter)) {
+                    $refClass = new \ReflectionClass($entity);
+                    $params = $refClass->getMethod($setter)->getParameters();
+                    $paramType = $params[0]->getType()->getName();
+
+                    if (str_contains($paramType, 'Api\Entity\\'))
+                        $val = $this->em->getRepository($paramType)->findOneBy(['id' => $val]);
+
                     $entity->$setter($val);
-                else
+                } else
                     $this->throwError();
                 // add error track or smth
             }
