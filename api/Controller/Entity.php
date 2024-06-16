@@ -191,10 +191,21 @@ class Entity extends Api
         // $user = $this->verifyJWT();
 
         if (!empty($entityClass) && !empty($id)) {
+            $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
-            dump($entityClass);
-            dump($id);
-            $this->respond('this is PATCH fn');
+            foreach ($this->params as $key => $val) {
+                $setter = 'set' . ucfirst($key);
+                if (method_exists($entity, $setter))
+                    $entity->$setter($val);
+                else
+                    $this->throwError();
+                // add error track or smth
+            }
+
+            if ($entity) {
+                $this->em->flush();
+                $this->respond(['success' => true]);
+            }
         }
 
         $this->throwError();
