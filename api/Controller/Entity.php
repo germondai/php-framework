@@ -73,9 +73,13 @@ class Entity extends Api
         if (!empty($entityClass)) {
             $query = $this->em->getRepository($entityClass)->createQueryBuilder('e');
 
+            // show soft deleted - later add only for admin/fullAccess role
+            if (!isset($this->params['all']))
+                $query = $query->where('e.deletedAt IS NULL');
+
             if (!empty($id)) {
                 $entry = $query
-                    ->where('e.id = :id')
+                    ->andWhere('e.id = :id')
                     ->setParameter('id', $id)
                     ->getQuery()
                     ->setHint(Query::HINT_INCLUDE_META_COLUMNS, true)
@@ -118,7 +122,6 @@ class Entity extends Api
     private function post(string $entityClass = null)
     {
         $this->allowMethods(['POST']);
-        // $this->requireParams([]);
         // $user = $this->verifyJWT();
 
         if (!empty($entityClass)) {
@@ -162,8 +165,6 @@ class Entity extends Api
 
                 $this->respond(['success' => true]);
             }
-
-            $this->respond(['success' => false]);
         }
 
         $this->throwError();
@@ -205,10 +206,18 @@ class Entity extends Api
         // $user = $this->verifyJWT();
 
         if (!empty($entityClass) && !empty($id)) {
+            $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
-            dump($entityClass);
-            dump($id);
-            $this->respond('this is DELETE fn');
+            // soft delete condition
+            if ($entity::class === 'Api\Entity\User')
+                $entity->setDeletedAt(new \DateTime);
+            else
+                $this->em->remove($entity);
+
+            if ($entity) {
+                $this->em->flush();
+                $this->respond(['success' => true]);
+            }
         }
 
         $this->throwError();
