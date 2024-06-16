@@ -19,11 +19,9 @@ class Book extends Base
     #[ORM\ManyToOne(inversedBy: 'books')]
     private User $user;
 
-    public function __construct(string $title, string $content)
+    public function __construct()
     {
         parent::__construct();
-        $this->setTitle($title);
-        $this->setContent($content);
     }
 
     public function getTitle(): string

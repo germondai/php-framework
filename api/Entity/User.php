@@ -33,16 +33,12 @@ class User extends Base
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
     private Collection $events;
 
-    public function __construct(string $name, string $surname, string $email, string $password)
+    public function __construct()
     {
         parent::__construct();
         $this->articles = new ArrayCollection();
         $this->books = new ArrayCollection();
         $this->events = new ArrayCollection();
-        $this->setName($name);
-        $this->setSurname($surname);
-        $this->setEmail($email);
-        $this->setPassword($password);
     }
 
     public function getName(): string
