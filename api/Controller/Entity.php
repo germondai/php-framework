@@ -172,22 +172,14 @@ class Entity extends Api
 
     private function put(string $entityClass = null, int $id = null)
     {
-        $this->allowMethods(['PUT']);
+        $this->allowMethods(['PUT', 'PATCH']);
         // $user = $this->verifyJWT();
-
-        if (!empty($entityClass) && !empty($id)) {
-
-            dump($entityClass);
-            dump($id);
-            $this->respond('this is PUT fn');
-        }
-
-        $this->throwError();
+        $this->patch($entityClass, $id);
     }
 
     private function patch(string $entityClass = null, int $id = null)
     {
-        $this->allowMethods(['PATCH']);
+        $this->allowMethods(['PATCH', 'PUT']);
         // $user = $this->verifyJWT();
 
         if (!empty($entityClass) && !empty($id)) {
