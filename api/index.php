@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 # imports
-use Api\Controller\Api;
 use Api\Controller\Entity;
 
 # require config

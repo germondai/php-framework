@@ -41,6 +41,9 @@ class Entity extends Api
         $id = $params[1] ?? false;
 
         if ($entityId && $entityId !== 'schema') {
+            if ($entityId === 'model')
+                parent::run();
+
             $entityClass = $this->findClassByTableName($entityId);
 
             $id = $id && ctype_digit($id) ? (int) $id : $id;

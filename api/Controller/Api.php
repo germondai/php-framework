@@ -18,8 +18,8 @@ class Api
     protected array $params;
     protected array $headers;
     protected string $method;
-    private string $request;
-    private array $action;
+    protected string $request;
+    protected array $action;
     protected array $statuses = [
         400 => "Bad Request",
         401 => "Unauthorized",
@@ -74,7 +74,7 @@ class Api
         $this->request = $request;
     }
 
-    private function solveRequest(): void
+    protected function solveRequest(): void
     {
         $req = $this->request;
 
@@ -83,6 +83,9 @@ class Api
 
             if (empty($requestParts[0]) || $requestParts[0] === 'api')
                 unset($requestParts[0]);
+            if (empty($requestParts[1]) || $requestParts[1] === 'model')
+                unset($requestParts[1]);
+
             $method = 'action' . ucfirst(array_pop($requestParts));
             $classParts = array_splice($requestParts, -1, 1);
 
