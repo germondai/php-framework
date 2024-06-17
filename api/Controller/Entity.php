@@ -72,6 +72,7 @@ class Entity extends Api
     private function get(string $entityClass = null, int $id = null)
     {
         $this->allowMethods(['GET']);
+        $user = $this->verifyJWT();
 
         if (!empty($entityClass)) {
             $query = $this->em->getRepository($entityClass)->createQueryBuilder('e');
