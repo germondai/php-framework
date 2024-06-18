@@ -253,11 +253,31 @@ class Entity extends Api
 
             $cols = [];
             if ($columns) {
+                function findType(string $name, string $type)
+                {
+                    $names = [
+                        'email' => 'email',
+                        'password' => 'password'
+                    ];
+                    if (in_array($name, $names))
+                        return $names[$name];
+
+                    $types = [
+                        'string' => 'text',
+                        'integer' => 'number',
+                        'text' => 'textarea',
+                        'datetime' => 'datetime-local',
+                    ];
+                    return $types[$type] ?? 'text';
+                }
+
+
                 foreach ($m->fieldMappings as $field)
                     $cols[] = [
                         'name' => $field->fieldName,
                         'col' => $field->columnName,
                         'type' => $field->type,
+                        'form' => findType($field->fieldName, $field->type),
                         'length' => $field->length,
                         'required' => !$field->nullable,
                         'disabled' => in_array($field->columnName, $this->disableds),
