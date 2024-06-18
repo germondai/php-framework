@@ -297,7 +297,7 @@ class Entity extends Api
                     return $cols;
             }
 
-            $tables[$name] = [
+            $tables[] = [
                 'id' => $name,
                 'name' => $tName,
                 'schema' => 'schema/' . $name,
