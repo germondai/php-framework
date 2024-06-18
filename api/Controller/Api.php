@@ -64,6 +64,10 @@ class Api
     private function setHeaders()
     {
         $this->headers = getallheaders();
+        if (!empty($this->headers['authorization'])) {
+            $this->headers['Authorization'] = $this->headers['authorization'];
+            unset($this->headers['authorization']);
+        }
     }
 
     private function setRequest()
