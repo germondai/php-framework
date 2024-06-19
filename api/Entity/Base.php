@@ -7,6 +7,7 @@ namespace Api\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]
+#[ORM\HasLifecycleCallbacks]
 abstract class Base
 {
     /** @var int */
@@ -42,6 +43,7 @@ abstract class Base
         return $this->createdAt;
     }
 
+    #[ORM\PrePersist]
     public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
@@ -53,6 +55,7 @@ abstract class Base
         return $this->updatedAt;
     }
 
+    #[ORM\PreUpdate]
     public function setUpdatedAt(\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
