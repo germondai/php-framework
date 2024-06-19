@@ -19,11 +19,6 @@ class Article extends Base
     #[ORM\ManyToOne(inversedBy: 'articles')]
     private User $user;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function getTitle(): string
     {
         return $this->title;

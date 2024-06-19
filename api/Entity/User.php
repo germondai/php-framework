@@ -35,7 +35,6 @@ class User extends Base
 
     public function __construct()
     {
-        parent::__construct();
         $this->articles = new ArrayCollection();
         $this->books = new ArrayCollection();
         $this->events = new ArrayCollection();

@@ -22,16 +22,11 @@ abstract class Base
 
     /** @var \DateTime */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected ?\DateTime $updatedAt = null;
+    protected ?\DateTime $updatedAt;
 
     /** @var \DateTime */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected ?\DateTime $deletedAt = null;
-
-    public function __construct()
-    {
-        $this->setCreatedAt(new \DateTime());
-    }
+    protected ?\DateTime $deletedAt;
 
     public function getId(): ?int
     {
@@ -43,11 +38,16 @@ abstract class Base
         return $this->createdAt;
     }
 
-    #[ORM\PrePersist]
     public function setCreatedAt(\DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTime();
     }
 
     public function getUpdatedAt(): ?\DateTime
@@ -55,11 +55,16 @@ abstract class Base
         return $this->updatedAt;
     }
 
-    #[ORM\PreUpdate]
     public function setUpdatedAt(\DateTime $updatedAt)
     {
         $this->updatedAt = $updatedAt;
         return $this;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTime();
     }
 
     public function getDeletedAt(): ?\DateTime

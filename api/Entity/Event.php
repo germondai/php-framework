@@ -19,11 +19,6 @@ class Event extends Base
     #[ORM\ManyToOne(inversedBy: 'events')]
     private User $user;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     public function getTitle(): string
     {
         return $this->title;
