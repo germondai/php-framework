@@ -155,7 +155,7 @@ class Entity extends Api
             if ($entityClass === 'Api\Entity\Media') {
                 if (empty($_FILES['file']))
                     $this->throwError();
-                $entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/uploads/', 80);
+                $entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/media/', 80);
             }
 
             $entity = !empty($entity) ? $entity : new $entityClass();
