@@ -35,8 +35,7 @@ class Entity extends Api
 
         unset($this->params['page'], $this->params['per_page'], $this->params['perPage'], $this->params['perpage']);
 
-        $route = str_replace(Helper::getLinkPath(), '', $_SERVER['REDIRECT_URL']);
-        $params = explode('/', $route);
+        $params = explode('/', $this->request);
         $entityId = $params[0] ?? false;
         $entityClass = null;
         $id = $params[1] ?? false;

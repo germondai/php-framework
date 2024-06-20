@@ -73,7 +73,9 @@ class Api
     private function setRequest()
     {
         $linkPath = Helper::getLinkPath();
-        $request = str_replace(substr($linkPath, 0, -4), '', $_SERVER['REDIRECT_URL']);
+        $request = str_replace($linkPath, '', $_SERVER['REDIRECT_URL']);
+        if ($_SERVER['REDIRECT_URL'] === str_replace('public/', '', $linkPath))
+            $request = '';
 
         $this->request = $request;
     }
