@@ -122,7 +122,7 @@ class Helper
         return false;
     }
 
-    private static function getUniqueFileName(string $dir, string $name, string $extension): string
+    public static function getUniqueFileName(string $dir, string $name, string $extension): string
     {
         $name = pathinfo($name, PATHINFO_FILENAME);
         $newName = $name . '.' . $extension;
@@ -139,7 +139,20 @@ class Helper
         return $newName;
     }
 
-    private static function mime2ext(string $mime): string
+    public static function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    public static function mime2ext(string $mime): string
     {
         $mime_map = [
             'video/3gpp2' => '3g2',
