@@ -85,28 +85,45 @@ class Helper
                 if (str_starts_with($type, 'image/')) {
                     $exts = ['jpg', 'jpeg', 'png', 'gif'];
                     if (in_array($ext, $exts)) {
-                        if (in_array($ext, ['jpg', 'jpeg'], true))
-                            $img = imagecreatefromjpeg($path);
-                        elseif ($ext === 'png')
-                            $img = imagecreatefrompng($path);
-                        elseif ($ext === 'gif')
-                            $img = imagecreatefromgif($path);
+                        $imgCreate = 'imagecreatefrom' . $ext;
+                        $img = $imgCreate($path);
 
-                        $webpName = self::getUniqueFileName($dir, $name, 'webp');
-                        $webpPath = $dir . $webpName;
-                        if (
-                            !empty($img) &&
-                            !file_exists($webpPath) &&
-                            imagewebp($img, $webpPath, $quality)
-                        ) {
-                            imagedestroy($img);
-                            unlink($path);
+                        [$imgW, $imgH] = getimagesize($path);
+                        if ($imgW > $maxWidth || $imgH > $maxHeight) {
+                            $ratio = $imgW / $imgH;
+                            if ($maxWidth / $maxHeight > $ratio) {
+                                $newW = $maxHeight * $ratio;
+                                $newH = $maxHeight;
+                            } else {
+                                $newW = $maxWidth;
+                                $newH = $maxWidth / $ratio;
+                            }
+                        }
 
-                            $type = 'image/webp';
-                            $ext = 'webp';
-                            $name = $webpName;
-                            $path = $webpPath;
-                            $size = filesize($path);
+                        $newW = (int) round($newW ?? $imgW);
+                        $newH = (int) round($newH ?? $imgH);
+
+                        if (!empty($img)) {
+                            $dst = imagecreatetruecolor($newW, $newH);
+                            imagecopyresampled($dst, $img, 0, 0, 0, 0, $newW, $newH, $imgW, $imgH);
+
+                            $webpName = self::getUniqueFileName($dir, $name, 'webp');
+                            $webpPath = $dir . $webpName;
+
+                            if (
+                                !file_exists($webpPath) &&
+                                imagewebp($dst, $webpPath, $quality)
+                            ) {
+                                imagedestroy($dst);
+                                imagedestroy($img);
+                                unlink($path);
+
+                                $type = 'image/webp';
+                                $ext = 'webp';
+                                $name = $webpName;
+                                $path = $webpPath;
+                                $size = filesize($path);
+                            }
                         }
                     }
                 }
