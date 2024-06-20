@@ -16,6 +16,7 @@ class Entity extends Api
         'articles' => 'Články',
         'books' => 'Knihy',
         'events' => 'Kurzy',
+        'medias' => 'Media',
     ];
     private array $disableds = ['id', 'created_at', 'updated_at', 'deleted_at'];
     private array $secrets = ['password'];
@@ -137,7 +138,7 @@ class Entity extends Api
                 $dis = $c['disabled'] ?? false;
                 $rel = $c['relation'] ?? false;
                 $req = $c['required'] ?? true;
-                if ($dis === true || $rel === 'multi')
+                if ($dis === true || $rel === 'multi' || $c['name'] === 'file')
                     continue;
 
                 $insertableCols[] = $c;
@@ -148,7 +149,13 @@ class Entity extends Api
 
             $this->requireParams($requireParams);
 
-            $entity = new $entityClass();
+            if ($entityClass === 'Api\Entity\Media') {
+                if (empty($_FILES['file']))
+                    $this->throwError();
+                $entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/uploads/', 80);
+            }
+
+            $entity = !empty($entity) ? $entity : new $entityClass();
             foreach ($insertableCols as $c) {
                 $name = $c['name'];
                 $value = $this->params[$name];
@@ -271,7 +278,6 @@ class Entity extends Api
                     return $types[$type] ?? 'text';
                 }
 
-
                 foreach ($m->fieldMappings as $field)
                     $cols[] = [
                         'name' => $field->fieldName,
@@ -309,6 +315,26 @@ class Entity extends Api
                         return -1;
                     return 0;
                 });
+
+                // cols filter
+                if ($name === 'medias') {
+                    foreach ($cols as &$c)
+                        if (
+                            !in_array($c['name'], ['title', 'alt', 'description', 'credit'])
+                            && isset(($c['disabled']))
+                        )
+                            $c['disabled'] = true;
+
+                    $cols[] = [
+                        'name' => 'file',
+                        'col' => 'file',
+                        'type' => 'file',
+                        'form' => 'file',
+                        'length' => null,
+                        'required' => true,
+                        'disabled' => false,
+                    ];
+                }
 
                 foreach ($cols as &$c)
                     unset($c['col']);
@@ -355,6 +381,7 @@ class Entity extends Api
         foreach ($entries as &$e) {
             $tempCols = $cols;
 
+            // entry value filters
             foreach ($e as $k => &$v) {
                 if (in_array($k, $this->secrets))
                     $v = 'SECRET';
@@ -372,7 +399,7 @@ class Entity extends Api
             }
 
             foreach ($tempCols as $c) {
-                if ($c['relation'] === 'multi') {
+                if (!empty($c['relation']) && $c['relation'] === 'multi') {
                     $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
                         ->select('c.id')
                         ->where('c.' . $c['mappedBy'] . ' = :id')

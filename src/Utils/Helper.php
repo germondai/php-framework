@@ -110,13 +110,12 @@ class Helper
                 $media = new Media();
                 $media->setName($name);
                 $media->setPath($path);
+                $media->setUrl('media/' . $name);
                 $media->setType($type);
                 $media->setExtension($ext);
                 $media->setSize($size);
-                dumpe($media);
 
-                // smth else
-                return 'successfully uploaded';
+                return $media;
             }
         }
 
