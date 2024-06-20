@@ -10,17 +10,17 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'medias')]
 class Media extends Base
 {
-    #[ORM\Column(type: 'string')]
-    private ?string $title;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $title = null;
 
-    #[ORM\Column(type: 'string')]
-    private ?string $alt;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $alt = null;
 
-    #[ORM\Column(type: 'string')]
-    private ?string $description;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\Column(type: 'string')]
-    private ?string $source;
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $source = null;
 
     #[ORM\Column(type: 'string')]
     private string $name;
@@ -37,7 +37,7 @@ class Media extends Base
     #[ORM\ManyToOne(inversedBy: 'medias')]
     private User $user;
 
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
@@ -48,7 +48,7 @@ class Media extends Base
         return $this;
     }
 
-    public function getAlt(): string
+    public function getAlt(): ?string
     {
         return $this->alt;
     }
@@ -59,7 +59,7 @@ class Media extends Base
         return $this;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -70,7 +70,7 @@ class Media extends Base
         return $this;
     }
 
-    public function getSource(): string
+    public function getSource(): ?string
     {
         return $this->source;
     }

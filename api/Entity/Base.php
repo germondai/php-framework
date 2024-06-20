@@ -22,11 +22,11 @@ abstract class Base
 
     /** @var \DateTime */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected ?\DateTime $updatedAt;
+    protected ?\DateTime $updatedAt = null;
 
     /** @var \DateTime */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    protected ?\DateTime $deletedAt;
+    protected ?\DateTime $deletedAt = null;
 
     public function getId(): ?int
     {
