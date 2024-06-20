@@ -41,7 +41,7 @@ class Media extends Base
     private int $size;
 
     #[ORM\ManyToOne(inversedBy: 'medias')]
-    private User $user;
+    private User $author;
 
     public function getTitle(): ?string
     {
@@ -153,15 +153,15 @@ class Media extends Base
         return $this;
     }
 
-    // User
-    public function getUser(): User
+    // Author
+    public function getAuthor(): User
     {
-        return $this->user;
+        return $this->author;
     }
 
-    public function setUser(User $user): Media
+    public function setAuthor(User $author): Media
     {
-        $this->user = $user;
+        $this->author = $author;
         return $this;
     }
 }

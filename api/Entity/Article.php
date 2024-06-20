@@ -17,7 +17,7 @@ class Article extends Base
     private string $content;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
-    private User $user;
+    private User $author;
 
     public function getTitle(): string
     {
@@ -41,15 +41,15 @@ class Article extends Base
         return $this;
     }
 
-    // User
-    public function getUser(): User
+    // Author
+    public function getAuthor(): User
     {
-        return $this->user;
+        return $this->author;
     }
 
-    public function setUser(User $user): Article
+    public function setAuthor(User $author): Article
     {
-        $this->user = $user;
+        $this->author = $author;
         return $this;
     }
 }

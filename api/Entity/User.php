@@ -24,16 +24,16 @@ class User extends Base
     #[ORM\Column(type: 'string')]
     private string $password;
 
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'author')]
     private Collection $articles;
 
-    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'author')]
     private Collection $books;
 
-    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
     private Collection $events;
 
-    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
     private Collection $medias;
 
     public function __construct()
@@ -96,7 +96,7 @@ class User extends Base
 
     public function addArticle(Article $article): User
     {
-        $article->setUser($this);
+        $article->setAuthor($this);
 
         $this->articles->add($article);
 
@@ -117,7 +117,7 @@ class User extends Base
 
     public function addBook(Book $book): User
     {
-        $book->setUser($this);
+        $book->setAuthor($this);
 
         $this->books->add($book);
 
@@ -138,7 +138,7 @@ class User extends Base
 
     public function addEvent(Event $event): User
     {
-        $event->setUser($this);
+        $event->setAuthor($this);
 
         $this->events->add($event);
 
@@ -159,7 +159,7 @@ class User extends Base
 
     public function addMedia(Media $media): User
     {
-        $media->setUser($this);
+        $media->setAuthor($this);
 
         $this->medias->add($media);
 
