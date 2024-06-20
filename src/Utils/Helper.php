@@ -112,13 +112,13 @@ class Helper
 
     private static function getUniqueFileName(string $dir, string $name, string $extension): string
     {
-        $counter = 1;
         $name = pathinfo($name, PATHINFO_FILENAME);
         $newDestPath = $dir . $name . '.' . $extension;
 
         if (!file_exists($newDestPath))
             return $newDestPath;
 
+        $counter = 1;
         while (file_exists($newDestPath)) {
             $newFileName = $name . '_' . $counter . '.' . $extension;
             $newDestPath = $dir . $newFileName;
