@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Api\Model;
 
 use Api\Controller\Api;
-use Api\Entity\Media;
 use Utils\Helper;
 
 class MediaModel extends Api

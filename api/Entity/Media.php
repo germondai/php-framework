@@ -20,7 +20,7 @@ class Media extends Base
     private ?string $description = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $source = null;
+    private ?string $credit = null;
 
     #[ORM\Column(type: 'string')]
     private string $name;
@@ -29,7 +29,13 @@ class Media extends Base
     private string $path;
 
     #[ORM\Column(type: 'string')]
+    private string $url;
+
+    #[ORM\Column(type: 'string')]
     private string $type;
+
+    #[ORM\Column(type: 'string')]
+    private string $extension;
 
     #[ORM\Column(type: 'integer')]
     private int $size;
@@ -70,14 +76,14 @@ class Media extends Base
         return $this;
     }
 
-    public function getSource(): ?string
+    public function getCredit(): ?string
     {
-        return $this->source;
+        return $this->credit;
     }
 
-    public function setSource(string $source): Media
+    public function setCredit(string $credit): Media
     {
-        $this->source = $source;
+        $this->credit = $credit;
         return $this;
     }
 
@@ -103,6 +109,17 @@ class Media extends Base
         return $this;
     }
 
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): Media
+    {
+        $this->url = $url;
+        return $this;
+    }
+
     public function getType(): string
     {
         return $this->type;
@@ -111,6 +128,17 @@ class Media extends Base
     public function setType(string $type): Media
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    public function setExtension(string $extension): Media
+    {
+        $this->extension = $extension;
         return $this;
     }
 

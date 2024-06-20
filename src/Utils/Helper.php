@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Utils;
 
+use Api\Entity\Media;
+
 class Helper
 {
     private static string $basePath;
@@ -72,35 +74,46 @@ class Helper
             $ext = self::mime2ext($type);
             finfo_close($finfo);
 
-            $destPath = self::getUniqueFileName($dir, $name, $ext);
+            $name = self::getUniqueFileName($dir, $name, $ext);
+            $path = $dir . $name;
 
             if (
-                !file_exists($destPath) &&
-                move_uploaded_file($tmp, $destPath)
+                !file_exists($path) &&
+                move_uploaded_file($tmp, $path)
             ) {
                 // if img
                 if (str_starts_with($type, 'image/')) {
                     $exts = ['jpg', 'jpeg', 'png', 'gif'];
                     if (in_array($ext, $exts)) {
                         if (in_array($ext, ['jpg', 'jpeg'], true))
-                            $img = imagecreatefromjpeg($destPath);
+                            $img = imagecreatefromjpeg($path);
                         elseif ($ext === 'png')
-                            $img = imagecreatefrompng($destPath);
+                            $img = imagecreatefrompng($path);
                         elseif ($ext === 'gif')
-                            $img = imagecreatefromgif($destPath);
+                            $img = imagecreatefromgif($path);
 
-                        $webpPath = self::getUniqueFileName($dir, $name, 'webp');
+                        $type = 'image/webp';
+                        $ext = 'webp';
+                        $name = self::getUniqueFileName($dir, $name, $ext);
+                        $path = $dir . $name;
                         if (
                             !empty($img) &&
-                            !file_exists($webpPath) &&
-                            imagewebp($img, $webpPath, $quality)
+                            !file_exists($path) &&
+                            imagewebp($img, $path, $quality)
                         ) {
                             imagedestroy($img);
-                            unlink($destPath);
-                            return 'successfully uploaded as .webp';
+                            unlink($path);
                         }
                     }
                 }
+
+                $media = new Media();
+                $media->setName($name);
+                $media->setPath($path);
+                $media->setType($type);
+                $media->setExtension($ext);
+                $media->setSize($size);
+                dumpe($media);
 
                 // smth else
                 return 'successfully uploaded';
@@ -113,19 +126,18 @@ class Helper
     private static function getUniqueFileName(string $dir, string $name, string $extension): string
     {
         $name = pathinfo($name, PATHINFO_FILENAME);
-        $newDestPath = $dir . $name . '.' . $extension;
+        $newName = $name . '.' . $extension;
 
-        if (!file_exists($newDestPath))
-            return $newDestPath;
+        if (!file_exists($dir . $newName))
+            return $newName;
 
         $counter = 1;
-        while (file_exists($newDestPath)) {
-            $newFileName = $name . '_' . $counter . '.' . $extension;
-            $newDestPath = $dir . $newFileName;
+        while (file_exists($dir . $newName)) {
+            $newName = $name . '_' . $counter . '.' . $extension;
             $counter++;
         }
 
-        return $newDestPath;
+        return $newName;
     }
 
     private static function mime2ext(string $mime): string
