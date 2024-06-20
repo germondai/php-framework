@@ -230,10 +230,13 @@ class Entity extends Api
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
-            // soft delete condition
-            if ($entity::class === 'Api\Entity\User')
+            // custom delete conditions
+            if ($entity instanceof \Api\Entity\User)
                 $entity->setDeletedAt(new \DateTime);
-            else
+            elseif ($entity instanceof \Api\Entity\Media) {
+                if (unlink($entity->getPath()))
+                    $this->em->remove($entity);
+            } else
                 $this->em->remove($entity);
 
             if ($entity) {
@@ -278,7 +281,11 @@ class Entity extends Api
                     return $types[$type] ?? 'text';
                 }
 
-                foreach ($m->fieldMappings as $field)
+                foreach ($m->fieldMappings as $field) {
+                    // hide specific cols
+                    if ($name === 'medias' && in_array($field->fieldName, ['path', 'extension']))
+                        continue;
+
                     $cols[] = [
                         'name' => $field->fieldName,
                         'col' => $field->columnName,
@@ -288,6 +295,7 @@ class Entity extends Api
                         'required' => !$field->nullable,
                         'disabled' => in_array($field->columnName, $this->disableds),
                     ];
+                }
 
                 foreach ($m->associationMappings as $assoc)
                     $cols[] = [
@@ -316,12 +324,11 @@ class Entity extends Api
                     return 0;
                 });
 
-                // cols filter
                 if ($name === 'medias') {
                     foreach ($cols as &$c)
                         if (
                             !in_array($c['name'], ['title', 'alt', 'description', 'credit'])
-                            && isset(($c['disabled']))
+                            && isset($c['disabled'])
                         )
                             $c['disabled'] = true;
 
@@ -383,6 +390,9 @@ class Entity extends Api
 
             // entry value filters
             foreach ($e as $k => &$v) {
+                if ($entityClass === 'Api\Entity\Media' && $k === 'size')
+                    $v = Helper::formatBytes($v);
+
                 if (in_array($k, $this->secrets))
                     $v = 'SECRET';
                 elseif ($v instanceof \DateTime)
