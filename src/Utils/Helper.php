@@ -92,17 +92,21 @@ class Helper
                         elseif ($ext === 'gif')
                             $img = imagecreatefromgif($path);
 
-                        $type = 'image/webp';
-                        $ext = 'webp';
-                        $name = self::getUniqueFileName($dir, $name, $ext);
-                        $path = $dir . $name;
+                        $webpName = self::getUniqueFileName($dir, $name, 'webp');
+                        $webpPath = $dir . $webpName;
                         if (
                             !empty($img) &&
-                            !file_exists($path) &&
-                            imagewebp($img, $path, $quality)
+                            !file_exists($webpPath) &&
+                            imagewebp($img, $webpPath, $quality)
                         ) {
                             imagedestroy($img);
                             unlink($path);
+
+                            $type = 'image/webp';
+                            $ext = 'webp';
+                            $name = $webpName;
+                            $path = $webpPath;
+                            $size = filesize($path);
                         }
                     }
                 }
