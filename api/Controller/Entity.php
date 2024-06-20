@@ -135,6 +135,9 @@ class Entity extends Api
             $insertableCols = [];
             $requireParams = [];
             foreach ($cols as $c) {
+                if ($c['name'] === 'author' && $this->params['author'] !== $user['user']->id)
+                    $this->throwError();
+
                 $dis = $c['disabled'] ?? false;
                 $rel = $c['relation'] ?? false;
                 $req = $c['required'] ?? true;
@@ -196,11 +199,14 @@ class Entity extends Api
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
+            $refClass = new \ReflectionClass($entity);
+            if ($refClass->hasMethod('getAuthor') && $entity->getAuthor()->getId() !== $user['user']->id)
+                $this->throwError();
+
             foreach ($this->params as $key => $val) {
                 $setter = 'set' . ucfirst($key);
 
                 if (method_exists($entity, $setter)) {
-                    $refClass = new \ReflectionClass($entity);
                     $params = $refClass->getMethod($setter)->getParameters();
                     $paramType = $params[0]->getType()->getName();
 
@@ -229,6 +235,10 @@ class Entity extends Api
 
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
+
+            $refClass = new \ReflectionClass($entity);
+            if ($refClass->hasMethod('getAuthor') && $entity->getAuthor()->getId() !== $user['user']->id)
+                $this->throwError();
 
             // custom delete conditions
             if ($entity instanceof \Api\Entity\User)

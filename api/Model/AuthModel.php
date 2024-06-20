@@ -27,7 +27,7 @@ class AuthModel extends Api
 
         $user = $this->em->getRepository(User::class)
             ->createQueryBuilder('u')
-            ->select('u.name, u.surname, u.email, u.password')
+            ->select('u.id, u.name, u.surname, u.email, u.password')
             ->where('u.email = :email')
             ->setParameter('email', $this->params['email'])
             ->getQuery()->getOneOrNullResult();
