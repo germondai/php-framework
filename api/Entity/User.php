@@ -33,11 +33,15 @@ class User extends Base
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
     private Collection $events;
 
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
+    private Collection $medias;
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
         $this->books = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->medias = new ArrayCollection();
     }
 
     public function getName(): string
@@ -144,6 +148,27 @@ class User extends Base
     public function removeEvent(Event $event): User
     {
         $this->events->removeElement($event);
+        return $this;
+    }
+
+    // Medias
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(Media $media): User
+    {
+        $media->setUser($this);
+
+        $this->medias->add($media);
+
+        return $this;
+    }
+
+    public function removeMedia(Media $media): User
+    {
+        $this->medias->removeElement($media);
         return $this;
     }
 }
