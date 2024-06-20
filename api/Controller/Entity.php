@@ -135,7 +135,7 @@ class Entity extends Api
             $insertableCols = [];
             $requireParams = [];
             foreach ($cols as $c) {
-                if ($c['name'] === 'author' && $this->params['author'] !== $user['user']->id)
+                if ($c['name'] === 'author' && (int) $this->params['author'] !== $user['user']->id)
                     $this->throwError();
 
                 $dis = $c['disabled'] ?? false;
