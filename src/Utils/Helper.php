@@ -105,6 +105,13 @@ class Helper
 
                         if (!empty($img)) {
                             $dst = imagecreatetruecolor($newW, $newH);
+
+                            // transparentize
+                            imagealphablending($dst, false);
+                            imagesavealpha($dst, true);
+                            $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+                            imagefilledrectangle($dst, 0, 0, $newW, $newH, $transparent);
+
                             imagecopyresampled($dst, $img, 0, 0, 0, 0, $newW, $newH, $imgW, $imgH);
 
                             $webpName = self::getUniqueFileName($dir, $name, 'webp');
