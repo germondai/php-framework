@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api;
+namespace Api\Controller;
 
 use Doctrine\ORM\EntityManager;
 use Nette\Database\Explorer;
@@ -11,14 +11,15 @@ use Utils\Doctrine;
 use Utils\Helper;
 use Utils\Token;
 
-class ApiController
+class Api
 {
     protected Explorer $e;
     protected EntityManager $em;
     protected array $params;
     protected array $headers;
-    private string $request;
-    private array $action;
+    protected string $method;
+    protected string $request;
+    protected array $action;
     protected array $statuses = [
         400 => "Bad Request",
         401 => "Unauthorized",
@@ -42,6 +43,7 @@ class ApiController
     {
         $this->e = Database::explore();
         $this->em = Doctrine::getEntityManager();
+        $this->method = $_SERVER['REQUEST_METHOD'];
         $this->setParams();
         $this->setHeaders();
         $this->setRequest();
@@ -50,11 +52,11 @@ class ApiController
     private function setParams()
     {
         $requestData = json_decode(file_get_contents('php://input') ?? '', true) ?? [];
-        $params = array_merge(
-            $requestData,
-            $_POST,
-            $_GET,
-        );
+        $params = array_merge($requestData, $_POST, $_GET) ?? [];
+
+        foreach ($params as $key => $val)
+            if (in_array($val, [null, '', 'null', 'undefined', []]))
+                unset($params[$key]);
 
         $this->params = $params;
     }
@@ -62,25 +64,32 @@ class ApiController
     private function setHeaders()
     {
         $this->headers = getallheaders();
+        if (!empty($this->headers['authorization'])) {
+            $this->headers['Authorization'] = $this->headers['authorization'];
+            unset($this->headers['authorization']);
+        }
     }
 
     private function setRequest()
     {
         $linkPath = Helper::getLinkPath();
-        $request = str_replace(substr($linkPath, 0, -4), '', $_SERVER['REDIRECT_URL']);
+        $request = str_replace($linkPath, '', $_SERVER['REDIRECT_URL']);
+        if ($_SERVER['REDIRECT_URL'] === str_replace('public/', '', $linkPath))
+            $request = '';
 
         $this->request = $request;
     }
 
-    private function solveRequest(): void
+    protected function solveRequest(): void
     {
         $req = $this->request;
 
         if (str_contains($req, '/')) {
             $requestParts = explode('/', $req);
 
-            if (empty($requestParts[0]) || $requestParts[0] === 'api')
+            if (empty($requestParts[0]) || $requestParts[0] === 'model')
                 unset($requestParts[0]);
+
             $method = 'action' . ucfirst(array_pop($requestParts));
             $classParts = array_splice($requestParts, -1, 1);
 
@@ -166,7 +175,7 @@ class ApiController
     private function requireValues(array $values, array $requiredValues, int $code = 400)
     {
         foreach ($requiredValues as $requiredValue) {
-            if (!isset($values[$requiredValue])) {
+            if (empty($values[$requiredValue])) {
                 $this->throwError($code);
             }
         }
@@ -174,6 +183,8 @@ class ApiController
 
     protected function verifyJWT(bool $die = true): array|false
     {
+        $this->requireHeaders(['Authorization']);
+
         $auth = $this->headers['Authorization'] ?? false;
 
         if ($auth)

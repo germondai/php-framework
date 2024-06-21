@@ -7,8 +7,8 @@ namespace Api\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'articles')]
-class Article extends Base
+#[ORM\Table(name: 'books')]
+class Book extends Base
 {
     #[ORM\Column(type: 'string')]
     private string $title;
@@ -16,7 +16,7 @@ class Article extends Base
     #[ORM\Column(type: 'text', length: 65535)]
     private string $content;
 
-    #[ORM\ManyToOne(inversedBy: 'articles')]
+    #[ORM\ManyToOne(inversedBy: 'books')]
     private User $author;
 
     public function getTitle(): string
@@ -24,7 +24,7 @@ class Article extends Base
         return $this->title;
     }
 
-    public function setTitle(string $title): Article
+    public function setTitle(string $title): Book
     {
         $this->title = $title;
         return $this;
@@ -35,7 +35,7 @@ class Article extends Base
         return $this->content;
     }
 
-    public function setContent(string $content): Article
+    public function setContent(string $content): Book
     {
         $this->content = $content;
         return $this;
@@ -47,7 +47,7 @@ class Article extends Base
         return $this->author;
     }
 
-    public function setAuthor(User $author): Article
+    public function setAuthor(User $author): Book
     {
         $this->author = $author;
         return $this;

@@ -4,37 +4,44 @@ declare(strict_types=1);
 
 namespace Api\Entity;
 
-use Api\BaseEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-class User extends BaseEntity
+class User extends Base
 {
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $surname;
 
-    #[ORM\Column(type: 'string', length: 256, unique: true)]
+    #[ORM\Column(type: 'string', unique: true)]
     private string $email;
 
-    #[ORM\Column(type: 'string', length: 256)]
+    #[ORM\Column(type: 'string')]
     private string $password;
 
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'user')]
+    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'author')]
     private Collection $articles;
 
-    public function __construct(string $name, string $surname, string $email, string $password)
+    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'author')]
+    private Collection $books;
+
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
+    private Collection $events;
+
+    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
+    private Collection $medias;
+
+    public function __construct()
     {
         $this->articles = new ArrayCollection();
-        $this->setName($name);
-        $this->setSurname($surname);
-        $this->setEmail($email);
-        $this->setPassword($password);
+        $this->books = new ArrayCollection();
+        $this->events = new ArrayCollection();
+        $this->medias = new ArrayCollection();
     }
 
     public function getName(): string
@@ -77,7 +84,7 @@ class User extends BaseEntity
 
     public function setPassword(string $password): User
     {
-        $this->password = $password;
+        $this->password = password_hash($password, PASSWORD_BCRYPT);
         return $this;
     }
 
@@ -89,7 +96,7 @@ class User extends BaseEntity
 
     public function addArticle(Article $article): User
     {
-        $article->setUser($this);
+        $article->setAuthor($this);
 
         $this->articles->add($article);
 
@@ -99,6 +106,69 @@ class User extends BaseEntity
     public function removeArticle(Article $article): User
     {
         $this->articles->removeElement($article);
+        return $this;
+    }
+
+    // Books
+    public function getBooks(): Collection
+    {
+        return $this->books;
+    }
+
+    public function addBook(Book $book): User
+    {
+        $book->setAuthor($this);
+
+        $this->books->add($book);
+
+        return $this;
+    }
+
+    public function removeBook(Book $book): User
+    {
+        $this->books->removeElement($book);
+        return $this;
+    }
+
+    // Events
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): User
+    {
+        $event->setAuthor($this);
+
+        $this->events->add($event);
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): User
+    {
+        $this->events->removeElement($event);
+        return $this;
+    }
+
+    // Medias
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(Media $media): User
+    {
+        $media->setAuthor($this);
+
+        $this->medias->add($media);
+
+        return $this;
+    }
+
+    public function removeMedia(Media $media): User
+    {
+        $this->medias->removeElement($media);
         return $this;
     }
 }

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 # imports
-use Api\ApiController;
+use Api\Controller\Entity;
 
 # require config
 require_once "../src/includes/config.php";
@@ -15,11 +15,9 @@ header("Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorizatio
 header('Content-Type: application/json; charset=utf-8');
 
 # preflight error fix
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    die();
-}
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
+    die(200);
 
 # handle api request
-$api = new ApiController();
+$api = new Entity();
 $api->run();

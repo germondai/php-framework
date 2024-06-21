@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Api\Model;
 
-use Api\ApiController;
+use Api\Controller\Api;
+use Api\Entity\Article;
 
-class ArticleModel extends ApiController
+class ArticleModel extends Api
 {
     public function action()
     {
@@ -29,5 +30,19 @@ class ArticleModel extends ApiController
         } else {
             $this->throwError(400);
         }
+    }
+
+    public function actionGetAll()
+    {
+        $this->allowMethods(['GET']);
+        $user = $this->verifyJWT();
+
+        $articles = $this->em->getRepository(Article::class)
+            ->createQueryBuilder('a')
+            ->select('a')
+            ->getQuery()
+            ->getArrayResult();
+
+        return ['articles' => $articles];
     }
 }

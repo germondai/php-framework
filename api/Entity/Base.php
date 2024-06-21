@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Api;
+namespace Api\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]
-class BaseEntity
+#[ORM\HasLifecycleCallbacks]
+abstract class Base
 {
     /** @var int */
     #[ORM\Id]
@@ -27,17 +28,12 @@ class BaseEntity
     #[ORM\Column(type: 'datetime', nullable: true)]
     protected ?\DateTime $deletedAt = null;
 
-    public function __construct()
-    {
-        $this->setCreatedAt(new \DateTime());
-    }
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
@@ -48,7 +44,13 @@ class BaseEntity
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTime
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTime();
+    }
+
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
@@ -59,7 +61,13 @@ class BaseEntity
         return $this;
     }
 
-    public function getDeletedAt(): \DateTime
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue()
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
+    public function getDeletedAt(): ?\DateTime
     {
         return $this->deletedAt;
     }

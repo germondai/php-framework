@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace Api\Model;
 
-use Api\ApiController;
+use Api\Controller\Api;
+use Api\Entity\User;
 use Utils\Token;
 
-class AuthModel extends ApiController
+class AuthModel extends Api
 {
-    private array $user = [
-        'name' => 'Joe',
-        'surname' => 'Doe',
-        'email' => 'imejl',
-    ];
-
     public function action()
     {
         $this->allowMethods(['GET']);
-        $this->requireHeaders(['Authorization']);
-        $this->verifyJWT();
+        $user = $this->verifyJWT();
 
-        return
-            $this->user
-        ;
+        return [
+            'user' => $user['user']
+        ];
     }
 
     public function actionLogin()
@@ -31,13 +25,22 @@ class AuthModel extends ApiController
         $this->allowMethods(['POST']);
         $this->requireParams(['email', 'password']);
 
+        $user = $this->em->getRepository(User::class)
+            ->createQueryBuilder('u')
+            ->select('u.id, u.name, u.surname, u.email, u.password')
+            ->where('u.email = :email')
+            ->setParameter('email', $this->params['email'])
+            ->getQuery()->getOneOrNullResult();
+
         if (
-            $this->params['email'] === 'imejl'
-            && $this->params['password'] === 'pass'
+            $user
+            && password_verify($this->params['password'], $user['password'])
         ) {
+            unset($user['password']);
+
             return [
-                'user' => $this->user,
-                'token' => Token::generate($this->user),
+                'user' => $user,
+                'token' => Token::generate(['user' => $user]),
             ];
         } else {
             $this->throwError(401);
