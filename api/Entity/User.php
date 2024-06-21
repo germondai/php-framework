@@ -27,20 +27,12 @@ class User extends Base
     #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'author')]
     private Collection $articles;
 
-    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'author')]
-    private Collection $books;
-
-    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
-    private Collection $events;
-
-    #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'author')]
+    #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'author')]
     private Collection $medias;
 
     public function __construct()
     {
         $this->articles = new ArrayCollection();
-        $this->books = new ArrayCollection();
-        $this->events = new ArrayCollection();
         $this->medias = new ArrayCollection();
     }
 
@@ -106,48 +98,6 @@ class User extends Base
     public function removeArticle(Article $article): User
     {
         $this->articles->removeElement($article);
-        return $this;
-    }
-
-    // Books
-    public function getBooks(): Collection
-    {
-        return $this->books;
-    }
-
-    public function addBook(Book $book): User
-    {
-        $book->setAuthor($this);
-
-        $this->books->add($book);
-
-        return $this;
-    }
-
-    public function removeBook(Book $book): User
-    {
-        $this->books->removeElement($book);
-        return $this;
-    }
-
-    // Events
-    public function getEvents(): Collection
-    {
-        return $this->events;
-    }
-
-    public function addEvent(Event $event): User
-    {
-        $event->setAuthor($this);
-
-        $this->events->add($event);
-
-        return $this;
-    }
-
-    public function removeEvent(Event $event): User
-    {
-        $this->events->removeElement($event);
         return $this;
     }
 

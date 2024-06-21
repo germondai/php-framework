@@ -14,8 +14,6 @@ class Entity extends Api
     private array $tNames = [
         'users' => 'Uživatelé',
         'articles' => 'Články',
-        'books' => 'Knihy',
-        'events' => 'Kurzy',
         'medias' => 'Media',
     ];
     private array $disableds = ['id', 'created_at', 'updated_at', 'deleted_at'];
