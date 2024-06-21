@@ -202,6 +202,10 @@ class Entity extends Api
         if (!empty($entityClass) && !empty($id)) {
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
+            // disable update of user if its not himself
+            if ($entityClass === 'Api\Entity\User' && $entity->getId() !== $user['user']->id)
+                $this->throwError();
+
             $refClass = new \ReflectionClass($entity);
             if ($refClass->hasMethod('getAuthor') && $entity->getAuthor()->getId() !== $user['user']->id)
                 $this->throwError();
@@ -244,9 +248,12 @@ class Entity extends Api
                 $this->throwError();
 
             // custom delete conditions
-            if ($entity instanceof \Api\Entity\User)
+            if ($entity instanceof \Api\Entity\User) {
+                // disable delete of user if its not himself
+                if ($entity->getId() !== $user['user']->id)
+                    $this->throwError();
                 $entity->setDeletedAt(new \DateTime);
-            elseif ($entity instanceof \Api\Entity\Media) {
+            } elseif ($entity instanceof \Api\Entity\Media) {
                 if (unlink($entity->getPath()))
                     $this->em->remove($entity);
             } else
