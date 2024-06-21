@@ -5,7 +5,7 @@
   </a>
 </h1>
 
-**PHP RESTful API** with **Doctrine** integration and **Nette DB Explorer**. Own **model/action routing** and **ApiController**. Doctrine **Console**, **Entities** and **Migrations** to create flawless **ORM Schemas**. Custom useful **Utils** like **Token** that manages **JSON Web Tokens** (JWT). Pre-done **BaseEntity**, **AuthModel** and **UserEntity** connected with **ArticleEntity** (OneToMany). Easy **configuration** and safe **.env** variables.
+**PHP RESTful API** with **Doctrine** integration. Own **Api** & **Entity Controller** that handles routing of **Model/Action** and **Entity** with **CRUD options** based on **Request Method**. Doctrine **Console**, **Entities** and **Migrations** to create flawless **ORM Schemas**. Custom useful **Utils** like **Token** that manages **JSON Web Tokens** (JWT). Pre-done **Auth Model**, **User Entity** connected with **Media Entity** by **OneToMany Relation** to keep track of **Author** of **uploaded** media **files** (**optimize**, **resize** and **image format/type change** included). Easy **configuration** and safe **.env** variables.
 
 ## ⚡️ Features
 
@@ -14,16 +14,24 @@
 - Own REST API System
   - Routing
   - Auth
+  - CRUD
+  - Media
+    - Upload
+    - Optimize
+    - Resize
+    - Quality
+    - Format
 - Doctrine
   - ORM
   - DBAL
   - Entities
   - Migrations
+  - Annotations
 - Custom Utils
   - Helper
   - Database
   - Doctrine
-  - JSON Web Tokens
+  - JSON Web Tokens (JWT)
 - Nette
   - Database Explorer
   - Tracy
@@ -31,11 +39,12 @@
 
 ## 🧬 Structure
 
-**api/** - accessible on /api/_model_/_action_, (models and entities)\
+**api/** - App's Main Code (Controller, Entity, Model)\
 **bin/** - Console for Doctrine\
 **migrations/** - Doctrine DB Migrations\
-**src/** - contains includes, utils and dev assets\
-**temp/** - Nette DB Temp Storage
+**public/** - Accessible from Outside (Routing, Media)\
+**src/** - Developer Source Files (Assets, Includes, Utils)\
+**temp/** - Storage for Temporary Files and Logs
 
 ## 🧠 Technologies
 
@@ -58,12 +67,31 @@ composer install
 
 **Setup .env**
 
-Fill in placeholders for database credentials in the .env file
+- Database Credentials
+- JWT Secret and Algorithm
 
 ```bash
 # to dupe example.env as .env
 cp example.env .env
 ```
+
+## 📝 Entity Guide
+
+Entity CRUD operations depends on Request Methods\
+Entity Schema returns tables / table with columns
+
+### Routes
+
+Operations: `/[entity]/[id]`
+
+- GET - Read
+- POST - Create
+- PUT - Replace
+- PATCH - Update
+- DELETE - Delete
+- OPTIONS - Preflight (always return 200)
+
+Schema: `/schema/[entity]`
 
 ## 📚 Doctrine Guide
 
