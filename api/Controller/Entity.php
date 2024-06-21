@@ -151,11 +151,9 @@ class Entity extends Api
 
             $this->requireParams($requireParams);
 
-            if ($entityClass === 'Api\Entity\Media') {
-                if (empty($_FILES['file']))
+            if ($entityClass === 'Api\Entity\Media')
+                if (empty($_FILES['file']) || !($entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/media/', 80)))
                     $this->throwError();
-                $entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/media/', 80);
-            }
 
             $entity = !empty($entity) ? $entity : new $entityClass();
             foreach ($insertableCols as $c) {
