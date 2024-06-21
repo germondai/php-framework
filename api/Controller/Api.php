@@ -52,11 +52,11 @@ class Api
     private function setParams()
     {
         $requestData = json_decode(file_get_contents('php://input') ?? '', true) ?? [];
-        $params = array_merge(
-            $requestData,
-            $_POST,
-            $_GET,
-        );
+        $params = array_merge($requestData, $_POST, $_GET) ?? [];
+
+        foreach ($params as $key => $val)
+            if (in_array($val, [null, '', 'null', 'undefined', []]))
+                unset($params[$key]);
 
         $this->params = $params;
     }

@@ -134,19 +134,25 @@ class Entity extends Api
             $insertableCols = [];
             $requireParams = [];
             foreach ($cols as $c) {
-                if ($c['name'] === 'author' && (int) $this->params['author'] !== $user['user']->id)
-                    $this->throwError();
-
+                $name = $c['name'] ?? null;
+                $val = $this->params[$name] ?? null;
                 $dis = $c['disabled'] ?? false;
                 $rel = $c['relation'] ?? false;
                 $req = $c['required'] ?? true;
-                if ($dis === true || $rel === 'multi' || $c['name'] === 'file')
+
+                if ($name === 'author' && (int) $val !== $user['user']->id)
+                    $this->throwError();
+
+                if (
+                    ($dis === true || $rel === 'multi' || $name === 'file')
+                    || (!$req && empty($val))
+                )
                     continue;
 
                 $insertableCols[] = $c;
 
                 if ($req)
-                    $requireParams[] = $c['name'];
+                    $requireParams[] = $name;
             }
 
             $this->requireParams($requireParams);
@@ -158,7 +164,7 @@ class Entity extends Api
             $entity = !empty($entity) ? $entity : new $entityClass();
             foreach ($insertableCols as $c) {
                 $name = $c['name'];
-                $value = $this->params[$name];
+                $value = $this->params[$name] ?? null;
                 $rel = $c['relation'] ?? false;
                 $class = $c['class'] ?? false;
 
