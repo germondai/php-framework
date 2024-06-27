@@ -3,9 +3,6 @@
 # imports
 use Utils\PageHelper;
 
-# require config
-require_once __DIR__ . '/config.php';
-
 # define fallback icon
 PageHelper::setIcon("assets/img/favicon.ico");
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 # imports
 use App\Controller\Api\Entity;
+use App\Controller\Front;
 
 # require config
 require_once "../config/app.php";
@@ -21,3 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
 # handle api request
 $api = new Entity();
 $api->run();
+
+// $api = new Front();
+// $api->run();

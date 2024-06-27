@@ -51,7 +51,7 @@ try {
     trigger_error('Database Connection Failed!');
 }
 
-# database
+# doctrine
 try {
     Doctrine::connect();
     $entityManager = Doctrine::getEntityManager();
@@ -61,3 +61,8 @@ try {
 
 # timezone
 date_default_timezone_set("Europe/Prague");
+
+function asset(string $path)
+{
+    return Helper::formatLink($path);
+}

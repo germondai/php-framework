@@ -35,7 +35,7 @@ class Helper
 
     public static function formatLink(string $link): string
     {
-        return str_starts_with($link, 'https://') ? $link : self::$linkPath . $link;
+        return htmlspecialchars(str_starts_with($link, 'https://') ? $link : self::$linkPath . $link);
     }
 
     public static function getEnv(string $env, bool $die = false)
