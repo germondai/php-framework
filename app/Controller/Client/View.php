@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Client;
 
+use App\Controller\Base;
 use App\Interface\Controller;
 use Utils\Helper;
 

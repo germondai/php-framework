@@ -27,6 +27,15 @@ class Helper
         return self::$linkPath;
     }
 
+    public static function getRequest(): string
+    {
+        $request = str_replace(self::$linkPath, '', $_SERVER['REDIRECT_URL']);
+        if ($_SERVER['REDIRECT_URL'] === str_replace('public/', '', self::$linkPath))
+            $request = '';
+
+        return $request;
+    }
+
     public static function isDev(): bool
     {
         $address = $_SERVER['SERVER_ADDR'] ?? true;

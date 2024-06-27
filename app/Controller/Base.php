@@ -47,7 +47,7 @@ abstract class Base implements Controller
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->setParams();
         $this->setHeaders();
-        $this->setRequest();
+        $this->request = Helper::getRequest();
     }
 
     private function setParams()
@@ -69,16 +69,6 @@ abstract class Base implements Controller
             $this->headers['Authorization'] = $this->headers['authorization'];
             unset($this->headers['authorization']);
         }
-    }
-
-    private function setRequest()
-    {
-        $linkPath = Helper::getLinkPath();
-        $request = str_replace($linkPath, '', $_SERVER['REDIRECT_URL']);
-        if ($_SERVER['REDIRECT_URL'] === str_replace('public/', '', $linkPath))
-            $request = '';
-
-        $this->request = $request;
     }
 
     protected function solveRequest(): void
