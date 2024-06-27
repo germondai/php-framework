@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Api\Entity;
 
+use Api\Interface\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]
 #[ORM\HasLifecycleCallbacks]
-abstract class Base
+abstract class Base implements Entity
 {
     /** @var int */
     #[ORM\Id]
