@@ -11,7 +11,7 @@ use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Tools\Console\Command;
 
 # Require Config
-require_once __DIR__ . "/../src/includes/config.php";
+require_once __DIR__ . "/../config/app.php";
 
 $dependencyFactory = DependencyFactory::fromEntityManager(
     new PhpFile(__DIR__ . '/../migrations.php'),
