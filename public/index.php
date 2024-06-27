@@ -6,7 +6,7 @@ declare(strict_types=1);
 use Api\Controller\Entity;
 
 # require config
-require_once "../src/includes/config.php";
+require_once "../config/app.php";
 
 # set json and cors headers
 header('Access-Control-Allow-Origin: *');

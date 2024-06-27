@@ -8,7 +8,7 @@ use Utils\Database;
 use Utils\Doctrine;
 
 # paths
-$basePath = realpath(__DIR__ . "/../../") . "/";
+$basePath = realpath(__DIR__ . "/../") . "/";
 $linkPath = dirname($_SERVER["PHP_SELF"]) . "/";
 
 # autoload
