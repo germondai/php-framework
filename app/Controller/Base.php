@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Interface\Controller;
 use Doctrine\ORM\EntityManager;
 use Nette\Database\Explorer;
 use Utils\Database;
@@ -11,7 +12,7 @@ use Utils\Doctrine;
 use Utils\Helper;
 use Utils\Token;
 
-abstract class Base
+abstract class Base implements Controller
 {
     protected Explorer $e;
     protected EntityManager $em;
@@ -110,7 +111,7 @@ abstract class Base
         $this->throwError(400, 'No model specified');
     }
 
-    public function run(): void
+    public function callModel(): void
     {
         $this->solveRequest();
 

@@ -41,7 +41,7 @@ class Entity extends Base
 
         if ($entityId && $entityId !== 'schema') {
             if ($entityId === 'model')
-                parent::run();
+                $this->callModel();
 
             $entityClass = $this->findClassByTableName($entityId);
 
