@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Utils;
 
-use Api\Entity\Media;
+use App\Entity\Media;
 
 class Helper
 {

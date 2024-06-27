@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Api\Entity;
+namespace App\Entity;
 
-use Api\Interface\Entity;
+use App\Interface\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\MappedSuperclass]

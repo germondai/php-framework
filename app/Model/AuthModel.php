@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Api\Model;
+namespace App\Model;
 
-use Api\Controller\Api;
-use Api\Entity\User;
+use App\Controller\Api\Entity;
+use App\Entity\User;
 use Utils\Token;
 
-class AuthModel extends Api
+class AuthModel extends Entity
 {
     public function action()
     {

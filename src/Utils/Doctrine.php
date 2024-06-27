@@ -20,7 +20,7 @@ class Doctrine
     {
         # Config for EntityManager
         $config = ORMSetup::createAttributeMetadataConfiguration(
-            paths: [Helper::getBasePath() . "api/Entity"],
+            paths: [Helper::getBasePath() . "app/Entity"],
             isDevMode: true,
         );
         $config->setNamingStrategy(new UnderscoreNamingStrategy(CASE_LOWER));

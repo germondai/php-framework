@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Api\Model\Users;
+namespace App\Model\Users;
 
-use Api\Controller\Api;
+use App\Controller\Api\Entity;
 
-class Admin extends Api
+class Admin extends Entity
 {
     public function actionGet()
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api\Interface;
+namespace App\Interface;
 
 interface Entity
 {

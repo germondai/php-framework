@@ -39,7 +39,7 @@
 
 ## 🧬 Structure
 
-**api/** - App's Main Code (Controller, Entity, Model)\
+**app/** - App's Main Code (Controller, Entity, Model)\
 **bin/** - Console for Doctrine\
 **migrations/** - Doctrine DB Migrations\
 **public/** - Accessible from Outside (Routing, Media)\

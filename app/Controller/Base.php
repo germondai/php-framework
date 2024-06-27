@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Api\Controller;
+namespace App\Controller;
 
 use Doctrine\ORM\EntityManager;
 use Nette\Database\Explorer;
@@ -11,7 +11,7 @@ use Utils\Doctrine;
 use Utils\Helper;
 use Utils\Token;
 
-class Api
+abstract class Base
 {
     protected Explorer $e;
     protected EntityManager $em;
@@ -95,7 +95,7 @@ class Api
 
             if ($classParts) {
                 $model = ucfirst($classParts[0]) . 'Model';
-                $namespace = 'Api\Model\\' . (!empty($requestParts) ? implode('\\', array_map('ucfirst', $requestParts)) . '\\' : '');
+                $namespace = 'App\Model\\' . (!empty($requestParts) ? implode('\\', array_map('ucfirst', $requestParts)) . '\\' : '');
                 $class = $namespace . $model;
 
                 $this->action = [

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 # imports
-use Api\Controller\Entity;
+use App\Controller\Api\Entity;
 
 # require config
 require_once "../config/app.php";

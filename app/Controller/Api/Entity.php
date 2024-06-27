@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Api\Controller;
+namespace App\Controller\Api;
 
+use App\Controller\Base;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Utils\Helper;
 
-class Entity extends Api
+class Entity extends Base
 {
     private array $tNames = [
         'users' => 'Uživatelé',
@@ -155,7 +156,7 @@ class Entity extends Api
 
             $this->requireParams($requireParams);
 
-            if ($entityClass === 'Api\Entity\Media')
+            if ($entityClass === 'App\Entity\Media')
                 if (empty($_FILES['file']) || !($entity = Helper::uploadFile($_FILES['file'], Helper::getBasePath() . 'public/media/', 80)))
                     $this->throwError();
 
@@ -201,7 +202,7 @@ class Entity extends Api
             $entity = $this->em->getRepository($entityClass)->findOneBy(['id' => $id]);
 
             // disable update of user if its not himself
-            if ($entityClass === 'Api\Entity\User' && $entity->getId() !== $user['user']->id)
+            if ($entityClass === 'App\Entity\User' && $entity->getId() !== $user['user']->id)
                 $this->throwError();
 
             $refClass = new \ReflectionClass($entity);
@@ -215,7 +216,7 @@ class Entity extends Api
                     $params = $refClass->getMethod($setter)->getParameters();
                     $paramType = $params[0]->getType()->getName();
 
-                    if (str_contains($paramType, 'Api\Entity\\'))
+                    if (str_contains($paramType, 'App\Entity\\'))
                         $val = $this->em->getRepository($paramType)->findOneBy(['id' => $val]);
 
                     $entity->$setter($val);
@@ -246,12 +247,12 @@ class Entity extends Api
                 $this->throwError();
 
             // custom delete conditions
-            if ($entity instanceof \Api\Entity\User) {
+            if ($entity instanceof \App\Entity\User) {
                 // disable delete of user if its not himself
                 if ($entity->getId() !== $user['user']->id)
                     $this->throwError();
                 $entity->setDeletedAt(new \DateTime);
-            } elseif ($entity instanceof \Api\Entity\Media) {
+            } elseif ($entity instanceof \App\Entity\Media) {
                 if (unlink($entity->getPath()))
                     $this->em->remove($entity);
             } else
@@ -408,7 +409,7 @@ class Entity extends Api
 
             // entry value filters
             foreach ($e as $k => &$v) {
-                if ($entityClass === 'Api\Entity\Media' && $k === 'size')
+                if ($entityClass === 'App\Entity\Media' && $k === 'size')
                     $v = Helper::formatBytes($v);
 
                 if (in_array($k, $this->secrets))
