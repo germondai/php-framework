@@ -53,7 +53,7 @@ class Bootstrap
 
         if (class_exists($class)) {
             $_SERVER['REQUEST'] = $parts;
-            $contr = new $class($parts);
+            $contr = new $class;
             $contr->run();
         }
     }
