@@ -4,43 +4,38 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Controller\Api\Entity;
 use Utils\Helper;
 
 class Bootstrap
 {
     public function boot(): void
     {
-        # set json and cors headers
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE');
-        header("Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Requested-With");
-        header('Content-Type: application/json; charset=utf-8');
-
-        # preflight error fix
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS')
-            die(200);
-
-        $api = new Entity;
-        $api->run();
-        die;
-
-        // TODO: !!!
+        # solve request
         $request = Helper::getRequest();
         $parts = explode('/', $request);
         $reqMode = !empty($parts[0]) ? $parts[0] : false;
 
+        # solve modes
         $modes = ['api', 'client'];
         $prefMode = $_ENV['MODE'] ?? 'client';
         $a = array_search($reqMode, $modes);
         $isValidMode = $a === false ? -1 : $a;
         $mode = $modes[$isValidMode] ?? $prefMode;
 
-        $controller = $parts[$isValidMode !== -1 ? 1 : 0] ?? false;
-        $controller = empty($controller) ? 'index' : $controller;
+        # remove mode from path
+        if (in_array($parts[0], $modes))
+            unset($parts[0]);
+        $parts = array_values($parts);
 
-        dump($parts);
+        # set controller
+        $controller = isset($parts[1]) ? $parts[0] : 'index';
 
+        # remove controller from path
+        if (isset($parts[1]))
+            unset($parts[0]);
+        $parts = array_values($parts);
+
+        # add appropriate headers if api
         if ($mode === 'api') {
             # set json and cors headers
             header('Access-Control-Allow-Origin: *');
@@ -53,13 +48,13 @@ class Bootstrap
                 die(200);
         }
 
+        # solve controller class
         $class = 'App\\Controller\\' . ucfirst($mode) . '\\' . ucfirst($controller);
-        dump($class);
+
         if (class_exists($class)) {
-            $contr = new $class;
+            $_SERVER['REQUEST'] = $parts;
+            $contr = new $class($parts);
             $contr->run();
         }
-
-        dumpe($mode);
     }
 }

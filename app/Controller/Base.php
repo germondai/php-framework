@@ -19,8 +19,7 @@ abstract class Base implements Controller
     protected array $params;
     protected array $headers;
     protected string $method;
-    protected string $request;
-    protected array $action;
+    protected array $request;
     protected array $statuses = [
         400 => "Bad Request",
         401 => "Unauthorized",
@@ -47,7 +46,7 @@ abstract class Base implements Controller
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->setParams();
         $this->setHeaders();
-        $this->request = Helper::getRequest();
+        $this->request = $_SERVER['REQUEST'] ?? Helper::getRequest();
     }
 
     private function setParams()
@@ -68,61 +67,6 @@ abstract class Base implements Controller
         if (!empty($this->headers['authorization'])) {
             $this->headers['Authorization'] = $this->headers['authorization'];
             unset($this->headers['authorization']);
-        }
-    }
-
-    protected function solveRequest(): void
-    {
-        $req = $this->request;
-
-        if (str_contains($req, '/')) {
-            $requestParts = explode('/', $req);
-
-            if (empty($requestParts[0]) || $requestParts[0] === 'model')
-                unset($requestParts[0]);
-
-            $method = 'action' . ucfirst(array_pop($requestParts));
-            $classParts = array_splice($requestParts, -1, 1);
-
-            if ($classParts) {
-                $model = ucfirst($classParts[0]) . 'Model';
-                $namespace = 'App\Model\\' . (!empty($requestParts) ? implode('\\', array_map('ucfirst', $requestParts)) . '\\' : '');
-                $class = $namespace . $model;
-
-                $this->action = [
-                    'class' => $class,
-                    'method' => $method,
-                ];
-
-                return;
-            }
-        }
-
-        $this->throwError(400, 'No model specified');
-    }
-
-    public function callModel(): void
-    {
-        $this->solveRequest();
-
-        $class = $this->action['class'];
-        $method = $this->action['method'];
-
-        if (class_exists($class)) {
-            $model = new $class();
-
-            if (method_exists($model, $method)) {
-                $result = $model->$method();
-
-                // fallback if return, no $this->respond()
-                $result
-                    ? $this->respond($result)
-                    : $this->throwError(404);
-            } else {
-                $this->throwError(404, 'Method not found');
-            }
-        } else {
-            $this->throwError(404, 'Model not found');
         }
     }
 

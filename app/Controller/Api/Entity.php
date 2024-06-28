@@ -34,15 +34,12 @@ class Entity extends Base
 
         unset($this->params['page'], $this->params['per_page'], $this->params['perPage'], $this->params['perpage']);
 
-        $params = explode('/', $this->request);
-        $entityId = $params[0] ?? false;
+        $req = $this->request;
+        $entityId = $req[0] ?? false;
         $entityClass = null;
-        $id = $params[1] ?? false;
+        $id = $req[1] ?? false;
 
         if ($entityId && $entityId !== 'schema') {
-            if ($entityId === 'model')
-                $this->callModel();
-
             $entityClass = $this->findClassByTableName($entityId);
 
             $id = $id && ctype_digit($id) ? (int) $id : $id;
