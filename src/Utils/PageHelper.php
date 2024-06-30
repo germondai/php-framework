@@ -129,32 +129,38 @@ class PageHelper
         $vite = $_ENV['VITE'] ?? 'http://localhost:5173';
         $solved = [];
 
-        if (Helper::isDev()) {
-            $client = $vite . '/@vite/client';
-            $solved[$client] = $client;
+        $client = $vite . '/@vite/client';
+        if (Helper::isDev())
+            $assets = [$client, ...$assets];
 
-            foreach ($assets as $a)
-                $solved[$a] = $vite . '/src/assets/' . $a;
-        } else {
-            $manifest = Helper::getBasePath() . 'public/dist/.vite/manifest.json';
-            $manifest = file_get_contents($manifest);
-            $manifest = json_decode($manifest, true);
+        $manifest = Helper::getBasePath() . 'public/dist/.vite/manifest.json';
+        $manifest = file_get_contents($manifest);
+        $manifest = json_decode($manifest, true);
 
-            foreach ($assets as $a) {
-                $a = 'src/assets/' . $a;
+        foreach ($assets as $a) {
+            $a = 'src/assets/' . $a;
 
-                $file = $manifest[$a]['file'];
-                $solved[$file] = $file;
+            try {
+                $viteA = $vite . '/' . $a;
+                $headers = @get_headers($viteA);
+                if (!str_contains($headers[0] ?? '404', '200'))
+                    throw new \Exception('Failed to load asset from vite server');
+                $solved[$viteA] = $viteA;
+            } catch (\Throwable $e) {
+                if (!str_contains($a, $vite)) {
+                    $file = $manifest[$a]['file'];
+                    $solved[$file] = $file;
 
-                $imports = $manifest[$a]['imports'] ?? [];
-                if (!empty($imports))
-                    foreach ($imports as $i)
-                        $solved[$i] = $manifest[$i]['file'];
+                    $imports = $manifest[$a]['imports'] ?? [];
+                    if (!empty($imports))
+                        foreach ($imports as $i)
+                            $solved[$i] = $manifest[$i]['file'];
+                }
             }
         }
 
         foreach ($solved as $a) {
-            if (!str_starts_with($a, $vite))
+            if (!str_starts_with($a, 'http://') && !str_starts_with($a, 'https://'))
                 $a = 'dist/' . $a;
 
             self::$assets[] = Helper::formatLink($a);
