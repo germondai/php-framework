@@ -31,7 +31,7 @@ PageHelper::setMetas([
     PageHelper::renderStyles();
     ?>
     <script type="module" src="http://localhost:5173/@vite/client"></script>
-    <!-- <link rel="stylesheet" href="http://localhost:5173/src/assets/css/style.css"> -->
+    <link rel="stylesheet" href="http://localhost:5173/src/assets/css/tailwind.css">
     <link rel="stylesheet" href="http://localhost:5173/src/assets/scss/app.scss">
 </head>
 <body>
