@@ -138,19 +138,20 @@ class PageHelper
         $manifest = json_decode($fgc ? $fgc : '', true);
 
         foreach ($assets as $a) {
-            $a = 'src/assets/' . $a;
+            $isV = str_contains($a, $vite);
+            $a = $isV ? $a : 'src/assets/' . $a;
 
             try {
-                $viteA = $vite . '/' . $a;
+                if (!Helper::isDev())
+                    throw new \Exception('You are currently NOT in development mode');
+
+                $viteA = $isV ? $a : $vite . '/' . $a;
                 $headers = @get_headers($viteA);
                 if (!str_contains($headers[0] ?? '404', '200'))
                     throw new \Exception('Failed to load asset from vite server');
                 $solved[$viteA] = $viteA;
             } catch (\Throwable $e) {
-                if (
-                    !str_contains($a, $vite) &&
-                    !empty($manifest[$a])
-                ) {
+                if (!$isV && !empty($manifest[$a])) {
                     $file = $manifest[$a]['file'];
                     $solved[$file] = $file;
 

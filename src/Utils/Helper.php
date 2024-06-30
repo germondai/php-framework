@@ -39,6 +39,7 @@ class Helper
 
     public static function isDev(): bool
     {
+        return false;
         $address = $_SERVER['SERVER_ADDR'] ?? true;
         return ($address == '127.0.0.1' || $address == '::1');
     }
