@@ -15,9 +15,12 @@ PageHelper::setMetas([
     "keywords" => "PHP, Starter, Tailwind, CSS, TailwindCSS, Nette, Tracy, Env"
 ]);
 
-# define styles
-// PageHelper::setStyles(["assets/css/style.css"]);
-
+# define assets
+PageHelper::setAssets([
+    'scss/app.scss',
+    'js/main.js',
+    'ts/app.ts',
+]);
 ?>
 
 <!DOCTYPE html>
@@ -29,10 +32,8 @@ PageHelper::setMetas([
     PageHelper::renderTitle();
     PageHelper::renderIcon();
     PageHelper::renderStyles();
+    PageHelper::renderAssets();
     ?>
-    <script type="module" src="http://localhost:5173/@vite/client"></script>
-    <script type="module" src="http://localhost:5173/src/assets/ts/app.ts"></script>
-    <link rel="stylesheet" href="http://localhost:5173/src/assets/scss/app.scss">
 </head>
 <body>
     <header></header>

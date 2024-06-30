@@ -16,8 +16,9 @@ class PageHelper
     private static array $metas = [
         'viewport' => 'width=device-width, initial-scale=1.0'
     ];
-    private static array $styles;
-    private static array $scripts;
+    private static array $styles = [];
+    private static array $scripts = [];
+    private static array $assets = [];
 
 
     public static function setLang(string $lang): void
@@ -120,6 +121,55 @@ class PageHelper
     {
         foreach (self::$scripts ?? [] as $js) {
             echo '<script src="' . $js . '"></script>';
+        }
+    }
+
+    public static function setAssets(array $assets): void
+    {
+        $vite = $_ENV['VITE'] ?? 'http://localhost:5173';
+        $solved = [];
+
+        if (Helper::isDev()) {
+            $client = $vite . '/@vite/client';
+            $solved[$client] = $client;
+
+            foreach ($assets as $a)
+                $solved[$a] = $vite . '/src/assets/' . $a;
+        } else {
+            $manifest = Helper::getBasePath() . 'public/dist/.vite/manifest.json';
+            $manifest = file_get_contents($manifest);
+            $manifest = json_decode($manifest, true);
+
+            foreach ($assets as $a) {
+                $a = 'src/assets/' . $a;
+
+                $file = $manifest[$a]['file'];
+                $solved[$file] = $file;
+
+                $imports = $manifest[$a]['imports'] ?? [];
+                if (!empty($imports))
+                    foreach ($imports as $i)
+                        $solved[$i] = $manifest[$i]['file'];
+            }
+        }
+
+        foreach ($solved as $a) {
+            if (!str_starts_with($a, $vite))
+                $a = 'dist/' . $a;
+
+            self::$assets[] = Helper::formatLink($a);
+        }
+    }
+
+    public static function renderAssets(): void
+    {
+        foreach (self::$assets as $a) {
+            $ext = pathinfo($a, PATHINFO_EXTENSION);
+
+            if (in_array($ext, ['js', 'ts'], true) || str_ends_with($a, '/@vite/client'))
+                echo '<script src="' . $a . '" type="module"></script>';
+            elseif (in_array($ext, ['css', 'scss'], true))
+                echo '<link href="' . $a . '" rel="stylesheet">';
         }
     }
 }
