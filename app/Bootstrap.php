@@ -28,7 +28,7 @@ class Bootstrap
         $parts = array_values($parts);
 
         # set controller
-        $controller = isset($parts[1]) ? $parts[0] : 'index';
+        $controller = !empty($parts[1]) ? $parts[0] : 'index';
 
         # remove controller from path
         if (isset($parts[1]))

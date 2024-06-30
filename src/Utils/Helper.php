@@ -29,8 +29,9 @@ class Helper
 
     public static function getRequest(): string
     {
-        $request = str_replace(self::$linkPath, '', $_SERVER['REDIRECT_URL']);
-        if ($_SERVER['REDIRECT_URL'] === str_replace('public/', '', self::$linkPath))
+        $url = $_SERVER['REDIRECT_URL'] ?? $_SERVER['REQUEST_URI'];
+        $request = str_replace(self::$linkPath, '', $url);
+        if ($url === str_replace('public/', '', self::$linkPath))
             $request = '';
 
         return $request;

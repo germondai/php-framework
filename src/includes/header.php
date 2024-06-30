@@ -16,7 +16,7 @@ PageHelper::setMetas([
 ]);
 
 # define styles
-PageHelper::setStyles(["assets/css/style.css"]);
+// PageHelper::setStyles(["assets/css/style.css"]);
 
 ?>
 
@@ -30,6 +30,8 @@ PageHelper::setStyles(["assets/css/style.css"]);
     PageHelper::renderIcon();
     PageHelper::renderStyles();
     ?>
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+    <link rel="stylesheet" href="http://localhost:5173/src/assets/css/style.css">
 </head>
 <body>
     <header></header>
