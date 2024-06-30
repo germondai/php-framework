@@ -11,31 +11,31 @@
 
 **Overview**
 
-- Own REST API System
-  - Routing
-  - Auth
-  - CRUD
-  - Media
-    - Upload
-    - Optimize
-    - Resize
-    - Quality
-    - Format
-- Doctrine
-  - ORM
-  - DBAL
-  - Entities
-  - Migrations
-  - Annotations
-- Custom Utils
-  - Helper
-  - Database
-  - Doctrine
-  - JSON Web Tokens (JWT)
-- Nette
-  - Database Explorer
-  - Tracy
-- Environment (.env)
+-   Own REST API System
+    -   Routing
+    -   Auth
+    -   CRUD
+    -   Media
+        -   Upload
+        -   Optimize
+        -   Resize
+        -   Quality
+        -   Format
+-   Doctrine
+    -   ORM
+    -   DBAL
+    -   Entities
+    -   Migrations
+    -   Annotations
+-   Custom Utils
+    -   Helper
+    -   Database
+    -   Doctrine
+    -   JSON Web Tokens (JWT)
+-   Nette
+    -   Database Explorer
+    -   Tracy
+-   Environment (.env)
 
 ## 🧬 Structure
 
@@ -48,16 +48,16 @@
 
 ## 🧠 Technologies
 
-- <a href="https://www.php.net/" target="_blank">PHP</a>
-- <a href="https://www.doctrine-project.org/" target="_blank">Doctrine</a>
-- <a href="https://doc.nette.org/en/database" target="_blank">Nette DB</a>
-- <a href="https://jwt.io/" target="_blank">JSON Web Tokens (JWT)</a>
+-   <a href="https://www.php.net/" target="_blank">PHP</a>
+-   <a href="https://www.doctrine-project.org/" target="_blank">Doctrine</a>
+-   <a href="https://doc.nette.org/en/database" target="_blank">Nette DB</a>
+-   <a href="https://jwt.io/" target="_blank">JSON Web Tokens (JWT)</a>
 
 ## 🛠️ Installation Instructions
 
 Requirements
 
-- 👨‍💻 <a href="https://getcomposer.org/" target="_blank">Composer</a>
+-   👨‍💻 <a href="https://getcomposer.org/" target="_blank">Composer</a>
 
 **Install dependencies**
 
@@ -67,8 +67,8 @@ composer install
 
 **Setup .env**
 
-- Database Credentials
-- JWT Secret and Algorithm
+-   Database Credentials
+-   JWT Secret and Algorithm
 
 ```bash
 # to dupe example.env as .env
@@ -84,12 +84,12 @@ Entity Schema returns tables / table with columns
 
 Operations: `/[entity]/[id]`
 
-- GET - Read
-- POST - Create
-- PUT - Replace
-- PATCH - Update
-- DELETE - Delete
-- OPTIONS - Preflight (always return 200)
+-   GET - Read
+-   POST - Create
+-   PUT - Replace
+-   PATCH - Update
+-   DELETE - Delete
+-   OPTIONS - Preflight (always return 200)
 
 Schema: `/schema/[entity]`
 
