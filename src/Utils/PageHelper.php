@@ -134,8 +134,8 @@ class PageHelper
             $assets = [$client, ...$assets];
 
         $manifest = Helper::getBasePath() . 'public/dist/.vite/manifest.json';
-        $manifest = file_get_contents($manifest);
-        $manifest = json_decode($manifest, true);
+        $fgc = @file_get_contents($manifest);
+        $manifest = json_decode($fgc ? $fgc : '', true);
 
         foreach ($assets as $a) {
             $a = 'src/assets/' . $a;
@@ -147,7 +147,10 @@ class PageHelper
                     throw new \Exception('Failed to load asset from vite server');
                 $solved[$viteA] = $viteA;
             } catch (\Throwable $e) {
-                if (!str_contains($a, $vite)) {
+                if (
+                    !str_contains($a, $vite) &&
+                    !empty($manifest[$a])
+                ) {
                     $file = $manifest[$a]['file'];
                     $solved[$file] = $file;
 
