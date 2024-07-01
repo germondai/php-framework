@@ -9,6 +9,7 @@ use Nette\Database\Connection;
 use Nette\Database\Structure;
 use Nette\Database\Conventions\DiscoveredConventions;
 use Nette\Database\Explorer;
+use Utils\Helpers\Helper;
 
 class Database
 {
