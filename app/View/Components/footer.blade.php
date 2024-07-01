@@ -10,10 +10,7 @@ use Utils\PageHelper;
 // ]);
 
 ?>
-        
         <footer></footer>
-        <?php
-        PageHelper::renderScripts();
-        ?>
+        <?php PageHelper::renderScripts(); ?>
     </body>
 </html>

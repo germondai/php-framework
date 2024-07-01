@@ -21,19 +21,20 @@ PageHelper::setAssets([
     'js/main.js',
     'ts/app.ts',
 ]);
+
 ?>
 
 <!DOCTYPE html>
 <html lang="<?= PageHelper::getLang() ?>">
 <head>
-    <?php
-    PageHelper::renderCharset();
-    PageHelper::renderMetas();
-    PageHelper::renderTitle();
-    PageHelper::renderIcon();
-    PageHelper::renderStyles();
-    PageHelper::renderAssets();
-    ?>
+<?php
+PageHelper::renderCharset();
+PageHelper::renderMetas();
+PageHelper::renderTitle();
+PageHelper::renderIcon();
+PageHelper::renderStyles();
+PageHelper::renderAssets();
+?>
 </head>
 <body>
     <header></header>

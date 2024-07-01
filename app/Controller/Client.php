@@ -41,9 +41,7 @@ abstract class Client extends Base
 
             # display view
             try {
-                include_once Helper::getBasePath() . 'src/includes/header.php';
                 echo $this->blade->run($view, (array) $this->template);
-                include_once Helper::getBasePath() . 'src/includes/footer.php';
                 return;
             } catch (\Exception $e) {
             }
