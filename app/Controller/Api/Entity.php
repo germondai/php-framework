@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
-use App\Controller\Base;
+use App\Controller\Api;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Utils\Helpers\Helper;
 
-class Entity extends Base
+class Entity extends Api
 {
     private array $tNames = [
         'users' => 'Uživatelé',

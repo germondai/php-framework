@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
-use App\Controller\Base;
+use App\Controller\Api;
 
-class Model extends Base
+class Model extends Api
 {
     public function run(): void
     {
