@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model;
 
-use App\Controller\Api\Entity;
+use App\Controller\Api\Model;
 use App\Entity\Article;
 
-class ArticleModel extends Entity
+class ArticleModel extends Model
 {
     public function action()
     {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Model\Users;
 
-use App\Controller\Api\Entity;
+use App\Controller\Api\Model;
 
-class Admin extends Entity
+class Admin extends Model
 {
     public function actionGet()
     {
