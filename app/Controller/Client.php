@@ -39,6 +39,11 @@ abstract class Client extends Base
             # call render
             $this->$fn();
 
+            # solve blade view destination
+            $controller = str_replace(__CLASS__ . '\\', '', get_class($this));
+            $controller = $controller === 'Index' ? '' : $controller . '.';
+            $view = 'Pages.' . $controller . $view;
+
             # display view
             try {
                 echo $this->blade->run($view, (array) $this->template);

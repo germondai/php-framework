@@ -7,12 +7,12 @@ use Utils\Helpers\PageHelper;
 PageHelper::setIcon("assets/img/favicon.ico");
 
 # define fallback project name (this will be displayed in page title)
-PageHelper::setProjectName("PHP Starter");
+PageHelper::setProjectName("PHP Full-Stack Framework");
 
 # define fallback metas
 PageHelper::setMetas([
-    "description" => "PHP Starter pack with Ready-to-Use functions like TailwindCSS",
-    "keywords" => "PHP, Starter, Tailwind, CSS, TailwindCSS, Nette, Tracy, Env"
+    "description" => "PHP Full-Stack MVC Framework with Doctrine, Vite, and much more...",
+    "keywords" => "api, php, template, jwt, crud, framework, orm, rest, mvc, migrations, hmr, doctrine, nette, blade, ts, entities, db, fullstack, tailwindcss, vite"
 ]);
 
 # define assets
