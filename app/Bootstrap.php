@@ -6,7 +6,7 @@ namespace App;
 
 use Utils\Helpers\Helper;
 
-class Bootstrap
+class Bootstrap implements \App\Interface\Bootstrap
 {
     public function boot(): void
     {
