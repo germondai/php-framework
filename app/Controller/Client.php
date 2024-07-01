@@ -4,17 +4,31 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use eftec\bladeone\BladeOne;
 use Utils\Helper;
 
 abstract class Client extends Base
 {
     protected \stdClass $template;
 
-    public function run(): void
+    protected BladeOne $blade;
+
+    public function __construct()
     {
+        # run parent construct
+        parent::__construct();
+
         # define template var
         $this->template = new \stdClass();
 
+        # create blade instance
+        $views = Helper::getBasePath() . 'app/View';
+        $cache = Helper::getBasePath() . 'temp';
+        $this->blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
+    }
+
+    public function run(): void
+    {
         # solve view
         $view = !empty($this->request[0]) ? $this->request[0] : 'index';
 
@@ -25,14 +39,16 @@ abstract class Client extends Base
             # call render
             $this->$fn();
 
-            # extract template vars
-            extract((array) $this->template);
-
             # display view
-            include_once Helper::getBasePath() . 'src/includes/header.php';
-            include_once Helper::getBasePath() . "app/View/{$view}.php";
-            include_once Helper::getBasePath() . 'src/includes/footer.php';
-        } else
-            echo "Page wasn't found!";
+            try {
+                include_once Helper::getBasePath() . 'src/includes/header.php';
+                echo $this->blade->run($view, (array) $this->template);
+                include_once Helper::getBasePath() . 'src/includes/footer.php';
+                return;
+            } catch (\Exception $e) {
+            }
+        }
+
+        echo "Page wasn't found!";
     }
 }
