@@ -1,7 +1,7 @@
 <?php
 
 # imports
-use Utils\PageHelper;
+use Utils\Helpers\PageHelper;
 
 # define fallback icon
 PageHelper::setIcon("assets/img/favicon.ico");

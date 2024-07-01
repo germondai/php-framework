@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use eftec\bladeone\BladeOne;
-use Utils\Helper;
+use Utils\Helpers\Helper;
 
 abstract class Client extends Base
 {

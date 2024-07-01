@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Utils;
-
-use Utils\Helper;
+namespace Utils\Helpers;
 
 class PageHelper
 {

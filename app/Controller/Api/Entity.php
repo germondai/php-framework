@@ -8,7 +8,7 @@ use App\Controller\Base;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Utils\Helper;
+use Utils\Helpers\Helper;
 
 class Entity extends Base
 {
