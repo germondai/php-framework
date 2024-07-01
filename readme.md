@@ -1,74 +1,120 @@
 <h1 align="center">
   <a href="https://api.germondai.com" target="_blank">
-    <img align="center" src="https://skillicons.dev/icons?i=php,mysql" /><br/><br/>
-    <span>PHP RESTful API</span>&nbsp;
+    <img align="center" src="https://skillicons.dev/icons?i=php,mysql,vite" /><br/><br/>
+    <span>PHP Full-Stack Framework</span>&nbsp;
   </a>
 </h1>
 
-**PHP RESTful API** with **Doctrine** integration. Own **Api** & **Entity Controller** that handles routing of **Model/Action** and **Entity** with **CRUD options** based on **Request Method**. Doctrine **Console**, **Entities** and **Migrations** to create flawless **ORM Schemas**. Custom useful **Utils** like **Token** that manages **JSON Web Tokens** (JWT). Pre-done **Auth Model**, **User Entity** connected with **Media Entity** by **OneToMany Relation** to keep track of **Author** of **uploaded** media **files** (**optimize**, **resize** and **image format/type change** included). Easy **configuration** and safe **.env** variables.
+**PHP Full-Stack Framework** offering both **front** and **back** - **end** options to run **simultaneously**!\
+Includes a **RESTful API** and **Model-View-Controller** (MVC) system with integrated **Doctrine** and **Vite**.
+
+**Controllers** for **Client** and **Api** to render views and routes as needed. Usage of **blade.php templating engine** with live HMR **Vite** server for **asset bundling** (includes asset mapper for production builds).
+
+Back-end **Api** with **Model** & **Entity Controller** that handles routing of **Model/Action** and **Entity CRUD operations** based on **Request Method**. Doctrine **Console**, **Entities** and **Migrations** to create flawless **ORM Schemas**. Custom useful **Utils** like **Token** that manages **JSON Web Tokens** (JWT). Pre-done **Auth Model**, **User Entity** connected with **Media Entity** by **OneToMany Relation** to keep track of **Author** of **uploaded** media **files** (**optimize**, **resize** and **image format/type change** included).
+
+Easy **configuration** and safe **.env** variables.
 
 ## ⚡️ Features
 
-**Overview**
+### Overview
 
--   Own REST API System
-    -   Routing
-    -   Auth
-    -   CRUD
-    -   Media
-        -   Upload
-        -   Optimize
-        -   Resize
-        -   Quality
-        -   Format
--   Doctrine
-    -   ORM
-    -   DBAL
-    -   Entities
-    -   Migrations
-    -   Annotations
--   Custom Utils
-    -   Helper
-    -   Database
-    -   Doctrine
-    -   JSON Web Tokens (JWT)
--   Nette
-    -   Database Explorer
-    -   Tracy
+-   MVC System
+    -   Config, Bootstrap, Router
+    -   Preferred mode (api/client)
+-   Front-end
+    -   Vite (js, ts, css, scss, tailwind)
+    -   Blade (Views, Components, Layouts)
+-   Back-end API
+    -   RESTful Entities (EntityController)
+        -   CRUD
+        -   Media
+            -   Upload
+            -   Optimize
+            -   Resize
+            -   Quality
+            -   Format
+    -   Models (ModelController)
+        -   Auth
+    -   Doctrine (DBAL, ORM)
+        -   Entities
+        -   Migrations
+    -   Custom Utils
+        -   Helpers
+            -   Helper
+            -   Page Helper
+        -   Database
+        -   Doctrine
+        -   JSON Web Tokens (JWT)
+    -   Nette
+        -   Database Explorer
+        -   Tracy
 -   Environment (.env)
+-   Prettier & ESLint
+-   .htaccess
 
 ## 🧬 Structure
 
-**app/** - App's Main Code (Controller, Entity, Model)\
+**app/** - App's Main Code (Controller, Entity, Model, View)\
 **bin/** - Console for Doctrine\
+**config/** - Main config of app\
+**log/** - All types of Error logs\
 **migrations/** - Doctrine DB Migrations\
-**public/** - Accessible from Outside (Routing, Media)\
-**src/** - Developer Source Files (Assets, Includes, Utils)\
-**temp/** - Storage for Temporary Files and Logs
+**public/** - Publicly accessible (Dist assets, Routing, Media)\
+**src/** - Developer Source Files (Assets, Utils)\
+**temp/** - Storage for Temporary Files and Caches
 
 ## 🧠 Technologies
 
--   <a href="https://www.php.net/" target="_blank">PHP</a>
--   <a href="https://www.doctrine-project.org/" target="_blank">Doctrine</a>
--   <a href="https://doc.nette.org/en/database" target="_blank">Nette DB</a>
--   <a href="https://jwt.io/" target="_blank">JSON Web Tokens (JWT)</a>
+-   <a href="https://php.net" target="_blank">PHP</a>
+-   <a href="https://vitejs.dev" target="_blank">Vite</a>
+-   <a href="https://github.com/EFTEC/BladeOne" target="_blank">Blade</a>
+-   <a href="https://doctrine-project.org" target="_blank">Doctrine</a>
+-   <a href="https://doc.nette.org/database" target="_blank">Nette DB</a>
+-   <a href="https://jwt.io" target="_blank">JSON Web Tokens (JWT)</a>
+-   (TS, SCSS, Tailwind, Prettier, ESLint, ...)
 
 ## 🛠️ Installation Instructions
 
 Requirements
 
 -   👨‍💻 <a href="https://getcomposer.org/" target="_blank">Composer</a>
+-   📦 <a href="https://getcomposer.org/" target="_blank">Node Package Manager (pnpm - recommended)</a>
 
-**Install dependencies**
+### Install dependencies
 
 ```bash
+# php back-end part
 composer install
+
+# vite front-end part
+pnpm install
 ```
 
-**Setup .env**
+### Assets
+
+With usage of PageHelper you can add assets that will be rendered automatically on page load\
+**NOTE**: Ensure that all your assets are defined in **vite.config**!
+
+If everything is set up correctly, assets are automatically mapped, resolved and added to the page.\
+In development mode, live Vite server versions are loaded. (if that fails, it attempts to load the production assets from public/dist directory)
+
+```bash
+# Add assets to the Page/View
+PageHelper::setAssets(['ts/app.ts']);
+
+# Preview assets in real time (Vite + HMR)
+pnpm run dev
+
+# Build assets (src/assets -> public/dist)
+pnpm build
+```
+
+### Setup .env
 
 -   Database Credentials
 -   JWT Secret and Algorithm
+-   Vite Server Destination
+-   Preferred mode (client / api)
 
 ```bash
 # to dupe example.env as .env
@@ -93,6 +139,23 @@ Operations: `/[entity]/[id]`
 
 Schema: `/schema/[entity]`
 
+## 📜 Model Guide
+
+Model routes are automatically generated by "action..." methods commonly written in camel case\
+(e.g. `actionGet()` accessed by `/[model]/get`)
+
+Models default action can be made by setting only\
+`action` method -> `/[model]/`
+
+Models can be nested as much as you want by namespaces\
+`Model\Users\Admin` -> `/Users/Admin/[action]`
+
+### Routes Summary
+
+Default Method: `/[model]/`\
+Model Methods: `/[model]/[action]`\
+Nested Models: `/[namespace]/[model]/[action]`
+
 ## 📚 Doctrine Guide
 
 The Doctrine console is in "_bin/console_"\
@@ -108,6 +171,20 @@ php bin/console ...
 
 # if you need commands list
 php bin/console list
+```
+
+## 🧹 Linting
+
+This project utilizes Prettier and ESLint for code formatting and style consistency
+
+```bash
+# Check for linting errors and warnings
+pnpm lint
+pnpm prettier
+
+# Automatically fix linting errors and warnings
+pnpm lint:fix
+pnpm prettier:fix
 ```
 
 ---
