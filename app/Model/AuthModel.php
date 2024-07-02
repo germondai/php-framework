@@ -6,6 +6,7 @@ namespace App\Model;
 
 use App\Controller\Api\Model;
 use App\Entity\User;
+use Utils\Helpers\Helper;
 use Utils\Token;
 
 class AuthModel extends Model
@@ -38,9 +39,19 @@ class AuthModel extends Model
         ) {
             unset($user['password']);
 
+            $api = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . Helper::link('');
+
+            if (!empty($_ENV['MODE']) && $_ENV['MODE'] === 'api')
+                $api = rtrim($api, '/');
+            else
+                $api .= 'api';
+
             return [
                 'user' => $user,
-                'token' => Token::generate(['user' => $user]),
+                'token' => Token::generate([
+                    'api' => $api,
+                    'user' => $user
+                ]),
             ];
         } else {
             $this->throwError(401);
