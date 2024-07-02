@@ -39,6 +39,10 @@ abstract class Client extends Base
             # call render
             $this->$fn();
 
+            $this->blade->directive('link', function ($link) {
+                return 'href="<?= \Utils\Helpers\Helper::link(' . $link . '); ?>"';
+            });
+
             # solve blade view destination
             $controller = str_replace(__CLASS__ . '\\', '', get_class($this));
             $controller = $controller === 'Index' ? '' : $controller . '.';

@@ -82,44 +82,38 @@ class PageHelper
 
     public static function setMetas(array $metas): void
     {
-        foreach ($metas as $name => $content) {
+        foreach ($metas as $name => $content)
             self::$metas[$name] ??= $content;
-        }
     }
 
     public static function renderMetas(): void
     {
-        foreach (self::$metas ?? [] as $name => $content) {
+        foreach (self::$metas ?? [] as $name => $content)
             echo '<meta ' . (str_starts_with($name, 'og:') ? 'property' : 'name') . '="' . $name . '" content="' . $content . '">';
-        }
     }
 
     public static function setStyles(array $styles): void
     {
-        foreach ($styles as $css) {
-            self::$styles[] = Helper::formatLink($css);
-        }
+        foreach ($styles as $css)
+            self::$styles[] = Helper::link($css);
     }
 
     public static function renderStyles(): void
     {
-        foreach (self::$styles ?? [] as $css) {
+        foreach (self::$styles ?? [] as $css)
             echo '<link href="' . $css . '" rel="stylesheet">';
-        }
     }
 
     public static function setScripts(array $scripts): void
     {
-        foreach ($scripts as $js) {
-            self::$scripts[] = Helper::formatLink($js);
-        }
+        foreach ($scripts as $js)
+            self::$scripts[] = Helper::link($js);
     }
 
     public static function renderScripts(): void
     {
-        foreach (self::$scripts ?? [] as $js) {
+        foreach (self::$scripts ?? [] as $js)
             echo '<script src="' . $js . '"></script>';
-        }
     }
 
     public static function setAssets(array $assets): void
@@ -165,7 +159,7 @@ class PageHelper
             if (!str_starts_with($a, 'http://') && !str_starts_with($a, 'https://'))
                 $a = 'dist/' . $a;
 
-            self::$assets[] = Helper::formatLink($a);
+            self::$assets[] = Helper::link($a);
         }
     }
 

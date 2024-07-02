@@ -12,6 +12,6 @@ class Profile extends Client
     public function renderIndex()
     {
         PageHelper::setTitle('Profile');
-        $this->template->user = 'Name Surname (from Controller)';
+        $this->template->user = 'Name Surname';
     }
 }

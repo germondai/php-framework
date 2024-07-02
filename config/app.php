@@ -64,5 +64,5 @@ date_default_timezone_set("Europe/Prague");
 
 function asset(string $path)
 {
-    return Helper::formatLink($path);
+    return Helper::link($path);
 }

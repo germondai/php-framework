@@ -43,9 +43,23 @@ class Helper
         return ($address == '127.0.0.1' || $address == '::1');
     }
 
-    public static function formatLink(string $link): string
+    public static function link(string $link): string
     {
-        return htmlspecialchars(str_starts_with($link, 'https://') || (self::isDev() && str_starts_with($link, 'http://')) ? $link : self::$linkPath . $link);
+        if (
+            !(
+                str_starts_with($link, 'https://') ||
+                (self::isDev() && str_starts_with($link, 'http://'))
+            )
+        ) {
+            $parts = explode('/', self::getLinkPath());
+
+            if (($last = array_search('public', array_reverse($parts, true))) !== false)
+                unset($parts[$last]);
+
+            $link = implode('/', $parts) . $link;
+        }
+
+        return htmlspecialchars($link);
     }
 
     public static function getEnv(string $env, bool $die = false)
