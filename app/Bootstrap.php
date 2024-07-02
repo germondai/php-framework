@@ -56,5 +56,7 @@ class Bootstrap implements \App\Interface\Bootstrap
             $contr = new $class;
             $contr->run();
         }
+
+        http_response_code(404);
     }
 }
