@@ -58,4 +58,9 @@ abstract class Client extends Base
 
         echo "Page wasn't found!";
     }
+
+    public function redirect(string $destination): void
+    {
+        die(header('location: ' . Helper::link($destination)));
+    }
 }
