@@ -75,7 +75,9 @@ Easy **configuration** and safe **.env** variables.
 
 ## 🛠️ Installation Instructions
 
-Requirements
+To start a project with this framework you can either clone this repository or download its source code from <a href="https://github.com/germondai/php-framework/releases/latest" target="_blank">latest release</a>
+
+### Requirements
 
 -   👨‍💻 <a href="https://getcomposer.org/" target="_blank">Composer</a>
 -   📦 <a href="https://getcomposer.org/" target="_blank">Node Package Manager (pnpm - recommended)</a>
