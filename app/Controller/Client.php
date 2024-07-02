@@ -10,8 +10,8 @@ use Utils\Helpers\Helper;
 abstract class Client extends Base
 {
     protected \stdClass $template;
-
     protected BladeOne $blade;
+    protected string $view;
 
     public function __construct()
     {
@@ -21,42 +21,55 @@ abstract class Client extends Base
         # define template var
         $this->template = new \stdClass();
 
+        # define requested view
+        $this->view = !empty($this->request[0]) ? $this->request[0] : 'index';
+
         # create blade instance
         $views = Helper::getBasePath() . 'app/View';
         $cache = Helper::getBasePath() . 'temp';
         $this->blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
+
+        # add custom directives
+        $this->blade->directive('link', function ($link) {
+            return 'href="<?= \Utils\Helpers\Helper::link(' . $link . '); ?>"';
+        });
+    }
+
+    protected function solveView(string $view): string
+    {
+        $controller = str_replace(__CLASS__ . '\\', '', get_class($this));
+        $controller = $controller === 'Index' ? '' : $controller . '.';
+
+        return 'Pages.' . $controller . $view;
     }
 
     public function run(): void
     {
-        # solve view
-        $view = !empty($this->request[0]) ? $this->request[0] : 'index';
-
         # construct render fn
-        $fn = 'render' . ucfirst($view);
+        $fn = 'render' . ucfirst($this->view);
 
         if (method_exists($this, $fn)) {
             # call render
             $this->$fn();
 
-            $this->blade->directive('link', function ($link) {
-                return 'href="<?= \Utils\Helpers\Helper::link(' . $link . '); ?>"';
-            });
-
             # solve blade view destination
-            $controller = str_replace(__CLASS__ . '\\', '', get_class($this));
-            $controller = $controller === 'Index' ? '' : $controller . '.';
-            $view = 'Pages.' . $controller . $view;
+            $view = $this->solveView($this->view);
 
             # display view
             try {
                 echo $this->blade->run($view, (array) $this->template);
                 return;
             } catch (\Exception $e) {
+                # failed to load view
             }
         }
 
-        echo "Page wasn't found!";
+        # render error 404 page if view not found
+        if ($this->view !== '404')
+            $this->redirect('error/404');
+
+        # if error 404 doesn't exist echo error
+        echo "ERROR: Page wasn't found!";
     }
 
     public function redirect(string $destination): void
