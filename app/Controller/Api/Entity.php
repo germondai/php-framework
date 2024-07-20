@@ -23,16 +23,53 @@ class Entity extends Api
     private int $page = 1;
     private int $perPage = 10;
 
+    /** 
+     * Array of Column Names
+     * @var string[]
+     */
+    private array $select = [];
+
+    /** 
+     * Array of ColumnName => Value
+     * @var array<string, mixed>
+     */
+    private array $where = [];
+
+    /** 
+     * Array of Column Names
+     * @var string[]|bool
+     */
+    private array|bool $relations = true;
+
     public function run(): void
     {
         $page = $this->params['page'] ?? '';
-        $perPage = $this->params['per_page'] ?? $this->params['perPage'] ?? $this->params['perpage'] ?? '';
         $page = ctype_digit($page) ? (int) $page : null;
-        $perPage = ctype_digit($perPage) ? (int) $perPage : null;
         $this->page = $page ?? $this->page;
+
+        $perPage = $this->params['per_page'] ?? $this->params['perPage'] ?? $this->params['perpage'] ?? '';
+        $perPage = ctype_digit($perPage) ? (int) $perPage : null;
         $this->perPage = $perPage ?? $this->perPage;
 
-        unset($this->params['page'], $this->params['per_page'], $this->params['perPage'], $this->params['perpage']);
+        $select = !empty($this->params['select']) ? explode(';', $this->params['select']) : [];
+        $this->select = $select;
+
+        $tempWhere = !empty($this->params['where']) ? explode(';', $this->params['where']) : [];
+        $where = [];
+        foreach ($tempWhere as $w) {
+            @list($k, $v) = explode('=', $w);
+            $where[$k] = $v;
+        }
+        $this->where = $where;
+
+        $relations = !empty($this->params['relations'])
+            ? ($this->params['relations'] == 'false'
+                ? false
+                : explode(';', $this->params['relations']))
+            : true;
+        $this->relations = $relations;
+
+        unset($this->params['page'], $this->params['per_page'], $this->params['perPage'], $this->params['perpage'], $this->params['select'], $this->params['where'], $this->params['relations']);
 
         $req = $this->request;
         $entityId = $req[0] ?? false;
@@ -76,6 +113,20 @@ class Entity extends Api
             // show soft deleted - later add only for admin/fullAccess role
             if (!isset($this->params['all']))
                 $query = $query->where('e.deletedAt IS NULL');
+
+            // select filter
+            if (!empty($this->select)) {
+                $c = 1;
+                foreach ($this->select as $s) {
+                    $query = $c > 1 ? $query->addSelect("e.{$s}") : $query->addSelect("e.{$s}");
+                    $c++;
+                }
+            }
+
+            // where filter
+            if (!empty($this->where))
+                foreach ($this->where as $k => $v)
+                    $query = $query->andWhere("e.{$k} = :{$k}")->setParameter($k, $v);
 
             if (!empty($id)) {
                 $entry = $query
@@ -424,21 +475,38 @@ class Entity extends Api
                     unset($e[$key]);
             }
 
+            $singles = [];
             foreach ($tempCols as $c) {
-                if (!empty($c['relation']) && $c['relation'] === 'multi') {
-                    $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
-                        ->select('c.id')
-                        ->where('c.' . $c['mappedBy'] . ' = :id')
-                        ->setParameter('id', $e['id'])
-                        ->getQuery()
-                        ->getArrayResult();
+                if (
+                    $this->relations &&
+                    (is_array($this->relations)
+                        ? in_array($c['name'], $this->relations)
+                        : true)
+                )
+                    if (!empty($c['relation']) && $c['relation'] === 'multi') {
+                        $ids = $this->em->getRepository($c['class'])->createQueryBuilder('c')
+                            ->select('c.id')
+                            ->where('c.' . $c['mappedBy'] . ' = :id')
+                            ->setParameter('id', $e['id'])
+                            ->getQuery()
+                            ->getArrayResult();
 
-                    foreach ($ids as &$a)
-                        $a = $a['id'];
+                        foreach ($ids as &$a)
+                            $a = $a['id'];
 
-                    $e[$c['name']] = $ids;
-                } else
-                    $e[$c['name']] = $val;
+                        $e[$c['name']] = $ids;
+                    } elseif (!empty($c['relation']) && $c['relation'] === 'single')
+                        $singles[] = $c;
+            }
+
+            if (count($singles) > 0) {
+                $cls = $this->em->getRepository($entityClass)->findOneBy(['id' => $e['id']]);
+
+                foreach ($singles as $s) {
+                    $getter = 'get' . ucfirst($s['name']);
+                    $id = $cls->$getter()->getId();
+                    $e[$s['name']] = $id;
+                }
             }
         }
 
